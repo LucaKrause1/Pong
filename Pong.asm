@@ -40,7 +40,7 @@ Start
 			lds #$3FFF		;Stack-Pointer initialisieren
 
 			jsr initAll
-			
+						
 Ende
 			bra *
 
@@ -59,6 +59,8 @@ Ende
 			
 			include includes\AD_Wandler.inc
 			include includes\loeschvariable.inc
+			
+			include includes\DezimaleUmwandlung.inc
 			
 ; -----------------------------------------------------------------------------
 ;   Vektortabelle
