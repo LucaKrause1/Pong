@@ -72,7 +72,6 @@ isrOC1
 			std TOC1
 			
 			;Flag zuruecksetzen
-			ldaa #%10000000					
-			staa TFLG1
+			bset TFLG1,  #%10000000	
 			
 			rti				;Ende Interrupt

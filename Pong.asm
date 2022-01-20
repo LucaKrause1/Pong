@@ -21,8 +21,6 @@
 
 VarSection	Section
 			org $0040
-			
-ballPos ds.b 2				;Ball-Positionen: [0] = X, [1] = Y
 
 
 ; -----------------------------------------------------------------------------
@@ -52,6 +50,7 @@ Ende
 			include sieben_Segment.inc
 			include Potis.inc
 			include init.inc
+			include Ball.inc
 			
 					
 			include includes\LCDfont.inc		;TODO: an richtiger Stelle?
