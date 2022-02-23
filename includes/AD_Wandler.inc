@@ -19,6 +19,7 @@ initADC
 ;   Startet den AD_Wandler und wartet die Umwandlung ab
 ;	nutzt A,X
 ;	Ergebnisse:
+; 	gibt die Werte 0 .. 255 zurueck
 ;		A = Schlaeger 1
 ;		B = Schlaeger 2
 ; -----------------------------------------------------------------------------

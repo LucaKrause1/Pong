@@ -22,4 +22,6 @@ initAll
 			jsr initSegments		;7-Segment Anzeigen
 			jsr initSegmentTimer
 			
+			;jsr initBallTimer		;Ball starten -> evtl. erst bei Spielstart starten und wieder abbrechen?
+			
 			rts							;Ende

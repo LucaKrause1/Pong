@@ -8,6 +8,7 @@
 ;Variablen
 
 ballPos ds.b 2									;Ball-Positionen: [0] = X, [1] = Y
+ballChange ds.b 2								;Positionsaenderung nach dem naechsten Tick
 Geschwindigkeit ds.w 1						;Geschwindigkeit des Balls, 
 														;je kleiner, desto schneller
 
@@ -33,6 +34,12 @@ BallTimer
 ;	aktualisiert den Ball
 ; -----------------------------------------------------------------------------
 isrOC2
+			ldx #ballPos
+			ldaa 0,x
+			ldab 1,x
+			jsr deleteBall
+			
+			jsr loadBall
 														;Timer einstellen
 			ldd TOC2								;Frequenz einstellen
 			addd #2000							;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz

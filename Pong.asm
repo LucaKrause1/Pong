@@ -39,6 +39,18 @@ Start
 
 			jsr initAll
 						
+Play	
+			;Schlaeger in A und B
+			jsr startADC
+			;konvertiere Schlaeger
+			jsr mapCoord
+			staa BatPos1
+			tba
+			jsr mapCoord
+			staa BatPos2
+			
+			bra Play
+			
 Ende
 			bra *
 
