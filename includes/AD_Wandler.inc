@@ -2,16 +2,16 @@
      
 		switch VarSection
 ;Variablen
-kanal ds.b 1
 
 		switch RomSection
 ;Konstanten
+kanal dc.b 4 ;4 = Poti links, 5 = Poti rechts
 
 ; -----------------------------------------------------------------------------
 ;   Schaltet den A/D-Wandler ein
 ;	keine Parameter
 ; -----------------------------------------------------------------------------
-initADC
+initADC	
 		bset OPTION, #%10000000
 		rts									;Ende
 		
@@ -24,7 +24,7 @@ initADC
 ;		B = Schlaeger 2
 ; -----------------------------------------------------------------------------
 startADC
-		staa kanal							;ausgewaehlten Kanal speichern
+		ldaa kanal							;ausgewaehlten Kanal laden
 		oraa #16							;das Mult Bit setzen
 		
 		staa ADCTL						;Wert an AD-Wandler uebergeben
@@ -33,9 +33,9 @@ Warte
 		ldaa ADCTL						;TODO: swi einbauen?
 		bpl Warte							;Endlosschleife, bis MSB gesetzt
 		
-		ldX #ADR1
+		ldx #ADR1
 		ldaa 0,x							;1. Register laden
 		ldab 1,x							;2. Register laden
 		
-												;Ergebnisse in A und B
+											;Ergebnisse in A und B
 		rts									;Ende

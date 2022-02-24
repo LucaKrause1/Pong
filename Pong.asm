@@ -21,7 +21,7 @@
 
 VarSection	Section
 			org $0040
-
+;speicher ds.b 8
 
 ; -----------------------------------------------------------------------------
 ;   Beginn des Programmcodes im schreibgeschuetzten Teil des Speichers
@@ -33,21 +33,20 @@ RomSection	Section
 ; -----------------------------------------------------------------------------
 ;   Hauptprogramm
 ; -----------------------------------------------------------------------------
-
 Start	
 			lds #$3FFF		;Stack-Pointer initialisieren
-
-			jsr initAll
+			
+			jsr initAll			
 						
 Play	
 			;Schlaeger in A und B
 			jsr startADC
-			;konvertiere Schlaeger
-			jsr mapCoord
 			staa BatPos1
-			tba
-			jsr mapCoord
-			staa BatPos2
+			stab BatPos2
+			;konvertiere Schlaeger
+			jsr transformCoords			;transformierte Koordinaten in BatPos1 und BatPos2
+			;in Hexa:A = 0 - 37, B = 0 - 37
+			jsr setBats
 			
 			bra Play
 			
@@ -63,6 +62,8 @@ Ende
 			include Potis.inc
 			include init.inc
 			include Ball.inc
+			include Debug.inc
+			include Ein_Ausgabe.inc
 			
 					
 			include includes\LCDfont.inc		;TODO: an richtiger Stelle?

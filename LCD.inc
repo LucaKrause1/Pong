@@ -9,13 +9,20 @@ batX ds.b 1										;X-Position des Schlaegers
 Schlaeger1 ds.b 8								;Alle Positionen des Schlaegers 1
 Schlaeger2 ds.b 8								;Alle Positionen des Schlaegers 2
 LCDcurrentPage ds.b 1
-secondPos  ds.b 1
+position ds.b 1
+leftBits ds.b 1
+
+bitNum ds.b 1
+startBit ds.b 1
+endBit ds.b 1									;Bit nach dem letzten zulässigen Bit
 
 		switch RomSection
 ;Konstanten
 pages dc.b 8
 columns dc.b 128
 pagesInBits dc.b 64
+pageLength dc.b 8
+batSize dc.b 8
 
 
 deleteBall
@@ -24,86 +31,130 @@ deleteBall
 loadBall
 		rts											;Ende
 
+		
 ; -----------------------------------------------------------------------------
-;   Setzt die Schlaeger im Speicher zurueck
+;   Setzt die Schlaeger im Speicher
 ;	-> gesamte Y-Richtung
 ;	-> erstmal Schlaeger = Breite 1
-;	nutzt A,B,X
+;	nutzt A,B,X,Y
+;	B = Position Schlaeger
+;	X = Adresse des Schlaegers
+;	X ist immer der Speicherort des naechsten Bytes
 ; -----------------------------------------------------------------------------
-deleteBats
-		ldab pages
-		addb pages								;Zaehler initialisieren fuer beide Schlager
-								
+setBat
 		ldaa #0
-		ldx #Schlaeger1						;auf den Anfang der Schlaeger zeigen
-														;wo ist Schlaeger2? -> direkt im Speicher dahinter
-deleteBatsLoop
+		staa bitNum
+		stab startBit
+		addb batSize
+		stab endBit
+		ldaa startBit
+		ldab endBit
+		
+		ldy #0		;Number of pages in Y
+		ldab pages
+		aby
+		
+BytesSetBatLoop		
+		ldaa #0
+		ldab pageLength
+BitsSetBatLoop
+		decb
+		bmi EndSetBatLoops
+		pshb			;Zaehler sichern
+		lsra
+		inc bitNum
+		
+		ldab bitNum
+		
+		cmpb startBit
+		blo EndSetBatLoop ;Branch, wenn die bitnum < startbit
+		ldab bitNum		;nicht sicher, ob das Ergebnis in B landet, da es wie eine Subtraktion implementiert ist.
+		cmpb endBit
+		bhi EndSetBatLoop	;Branch, wenn bitnum >= endbit
+		
+		adda #128			;Bit ist Teil des Schlaegers
+
+EndSetBatLoop
+		pulb			;Zaehler zurueckholen
+		bra BitsSetBatLoop
+		
+EndSetBatLoops				;Page fertig
 		staa 0,x
 		inx
-		decb
-		bne deleteBatsLoop
+		
+		;jsr debug
+		;jsr zeilenumbruch
+		dey
+		beq EndeSetBat
+		
+		bra BytesSetBatLoop
+
+		
+EndeSetBat
 		
 		rts											;Ende
+
 
 
 ; -----------------------------------------------------------------------------
 ;   Setzt die Schlaeger im Speicher
 ;	-> gesamte Y-Richtung
-;	-> erstmal Schlaeger = Breite 1
+;	-> erstmal Schlaeger = Breite 8
 ;	nutzt A,B,X
 ;	A = Position Schlaeger 1
 ;	B = Position Schlaeger 2
 ; -----------------------------------------------------------------------------
 setBats
-		stab secondPos
-		ldab 
-setBatsLoop1
 		
 		
-		rts
+		ldx #Schlaeger1
+		;jsr debug
+		;jsr zeilenumbruch
+		ldab BatPos1
+		jsr setBat
+		ldaa #1
+		jsr setBatLCD
+		
+		
+		
+		ldx #Schlaeger2
+		ldab BatPos2
+		;jsr debug
+		;jsr zeilenumbruch
+		jsr setBat
+		ldaa #126
+		jsr setBatLCD
+		
+		rts					;Ende
 
 ; -----------------------------------------------------------------------------
-;   Setzt einen Schlaeger auf dem Feld zurueck
-;	-> gesamte Y-Richtung
-;	-> erstmal Schlaeger = Breite 1
-;	Column in Variable batX
-;	nutzt A,B,X
-; -----------------------------------------------------------------------------
-resetBat
+; X = Speicherfeld eines Schlaegers
+;	A = Spalte
+;	gibt bisher 8 Pages untereinander aus!!!!!!!
+setBatLCD
+		staa batX
 		ldaa #0										;erste Page zuerst ansprechen
 		staa LCDcurrentPage
 		
 		ldab #8										;Schleifendurchlaeufe, da 8 Zeilen
-resetBatLoop
+		
+setBatLCDLoop
 		ldaa batX									;Spalte einstellen
+		
 		jsr LCDcolumn
 		
-		ldaa LCDcurrentPage					;Zeile einstellen
+		ldaa LCDcurrentPage							;Zeile einstellen
 		jsr LCDpage
+		
+		ldaa LCDcurrentPage
 		inca
 		staa LCDcurrentPage
-		;TODO: wo kommt das X her?
+		
 		ldaa 0,x									;Daten veroeffentlichen
 		inx
 		jsr LCDdata
 		
-		decb											;Gehoert die naechste Zeile noch zum Spielfeld?
-		bne resetBatLoop
+		decb										;Gehoert die naechste Zeile noch zum Spielfeld?
+		bne setBatLCDLoop
 		
-		rts											;Ende
-
-; -----------------------------------------------------------------------------
-;   Setzt die Schlaeger auf dem Feld zurueck
-;	-> gesamte Y-Richtung
-;	-> erstmal Schlaeger = Breite 1
-; -----------------------------------------------------------------------------
-resetBats
-		ldaa #1										;Eine Spalte frei nach links
-		staa batX
-		jsr resetBat
-		
-		ldaa #126									;Eine Spalte frei nach rechts
-		staa batX
-		jsr resetBat
-		
-		rts											;Ende										
+		rts					;Ende

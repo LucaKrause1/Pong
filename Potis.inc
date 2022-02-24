@@ -9,18 +9,21 @@
 
 BatPos1 ds.b	1						;Position des ersten Schlaegers
 BatPos2 ds.b	1						;Position des zweiten Schlaegers
-											;Poti-Maximalwert = 255
-div8 ds.b 1							;Potiposition /8
+
+										;Poti-Maximalwert = 255
+div8 ds.b 1								;Potiposition /8
 div16 ds.b 1							;Potiposition /16
+div32 ds.b 1							;Potiposition /32
 div64 ds.b 1							;Potiposition /64
+div128 ds.b 1							;Potiposition /128
 
 
 		switch RomSection
 ;Konstanten
-Schlaegerbreite dc.b 11
+Schlaegerbreite dc.b 8
 
 ; -----------------------------------------------------------------------------
-;	transformiert die Koordinaten eines Schlaegers auf max 51 
+;	transformiert die Koordinaten eines Schlaegers auf max 55 
 ;	(Schlaeger immer im Bild)
 ;	Koordinaten in A
 ;	nutzt A
@@ -34,10 +37,15 @@ mapCoord
 		lsra								;/16
 		staa div16
 		lsra								;/32
+		staa div32
 		lsra								;/64
 		staa div64
+		lsra								;/128
+		staa div128
 		
-		;div64 schon im Akku A
+		;div128 schon im Akku A
+		adda div128
+		adda div32
 		adda div16
 		adda div8
 		
@@ -51,9 +59,11 @@ mapCoord
 ; -----------------------------------------------------------------------------
 transformCoords
 		ldaa BatPos1
+		ldab #0
 		jsr mapCoord		
 		staa BatPos1
 		ldaa BatPos2
+		ldab #0
 		jsr mapCoord
 		staa BatPos2
 		
