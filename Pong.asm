@@ -45,7 +45,7 @@ Play
 			stab BatPos2
 			;konvertiere Schlaeger
 			jsr transformCoords			;transformierte Koordinaten in BatPos1 und BatPos2
-			;in Hexa:A = 0 - 37, B = 0 - 37
+			
 			jsr setBats
 			
 			bra Play
@@ -62,8 +62,8 @@ Ende
 			include Potis.inc
 			include init.inc
 			include Ball.inc
-			include Debug.inc
-			include Ein_Ausgabe.inc
+			;include Debug.inc
+			;include Ein_Ausgabe.inc
 			
 					
 			include includes\LCDfont.inc		;TODO: an richtiger Stelle?

@@ -103,26 +103,21 @@ EndeSetBat
 ;	nutzt A,B,X
 ;	A = Position Schlaeger 1
 ;	B = Position Schlaeger 2
+;	Poition in Hexa: A = 0 - 37, B = 0 - 37
 ; -----------------------------------------------------------------------------
 setBats
-		
-		
 		ldx #Schlaeger1
-		;jsr debug
-		;jsr zeilenumbruch
 		ldab BatPos1
 		jsr setBat
+		ldx #Schlaeger1
 		ldaa #1
 		jsr setBatLCD
 		
-		
-		
 		ldx #Schlaeger2
 		ldab BatPos2
-		;jsr debug
-		;jsr zeilenumbruch
 		jsr setBat
 		ldaa #126
+		ldx #Schlaeger2
 		jsr setBatLCD
 		
 		rts					;Ende

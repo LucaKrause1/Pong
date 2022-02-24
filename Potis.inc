@@ -62,6 +62,7 @@ transformCoords
 		ldab #0
 		jsr mapCoord		
 		staa BatPos1
+		
 		ldaa BatPos2
 		ldab #0
 		jsr mapCoord
