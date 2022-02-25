@@ -29,9 +29,9 @@ deleteBall
 		rts											;Ende
 		
 loadBall
+		
 		rts											;Ende
 
-		
 ; -----------------------------------------------------------------------------
 ;   Setzt die Schlaeger im Speicher
 ;	-> gesamte Y-Richtung
@@ -128,6 +128,9 @@ setBats
 ;	gibt bisher 8 Pages untereinander aus!!!!!!!
 setBatLCD
 		staa batX
+		
+		sei											;TODO: Interrupts unterbinden
+		
 		ldaa #0										;erste Page zuerst ansprechen
 		staa LCDcurrentPage
 		
@@ -151,5 +154,7 @@ setBatLCDLoop
 		
 		decb										;Gehoert die naechste Zeile noch zum Spielfeld?
 		bne setBatLCDLoop
+		
+		cli											;TODO: Interrupts erlauben
 		
 		rts					;Ende

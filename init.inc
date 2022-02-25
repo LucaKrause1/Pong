@@ -14,15 +14,18 @@
 initAll
 			
 			jsr initSPI 				;SPI-Schnittstelle
-			;jsr debug
+			
 			jsr initLCD 				;LCD-Display
+			jsr LoeschLCD
 											
 											;Potis
 			jsr initADC				;AD-Wandler
 			
-			;jsr initSegments		;7-Segment Anzeigen
-			;jsr initSegmentTimer
+			jsr initSegments		;7-Segment Anzeigen
+			jsr initSegmentTimer
 			
 			;jsr initBallTimer		;Ball starten -> evtl. erst bei Spielstart starten und wieder abbrechen?
+			
+			cli
 			
 			rts							;Ende

@@ -18,15 +18,16 @@ page ds.b 1							;Anzahl Zeilen
 ;	nutzt D
 ; -----------------------------------------------------------------------------
 LoeschLCD
-		ldaa #8
+		ldaa #9
 		
 RepeatRows
 		staa row
 
 		ldaa #0							;wird an das Display uebertragen
 		ldab #128						;Initialisiere den Spaltenzaehler mit 128 
-											;	->entspricht der maximalenSpaltenzahl des Displays
+										;->entspricht der maximalen Spaltenzahl des Displays
 RepeatForRow
+		ldaa #0							;wird an das Display uebertragen
 		jsr LCDdata					;leeres Byte setzen				
 		decb								;setze die noch zu leerenden Spalten runter
 		bne RepeatForRow			;wiederhole, solange B nicht Null ist

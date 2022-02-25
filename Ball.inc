@@ -7,16 +7,30 @@
 		switch VarSection
 ;Variablen
 
-ballPos ds.b 2									;Ball-Positionen: [0] = X, [1] = Y
-ballChange ds.b 2								;Positionsaenderung nach dem naechsten Tick
-Geschwindigkeit ds.w 1						;Geschwindigkeit des Balls, 
-														;je kleiner, desto schneller
+ballPos 		ds.b	2						;Ball-Positionen: [0] = X, [1] = Y
+ballChange 		ds.b	2						;Positionsaenderung nach dem naechsten Tick
+Geschwindigkeit ds.w	1						;Geschwindigkeit des Balls, 
+												;je kleiner, desto schneller
 
 		switch RomSection
 ;Konstanten
 
 StartGeschwindigkeit dc.w 2000
+startX 			dc.b	64
+starty 			dc.b	32
 
+
+; -----------------------------------------------------------------------------
+;	Setzt den Ball auf die Startposition jedes Spiels
+; -----------------------------------------------------------------------------
+initBall
+			ldaa startX
+			ldab starty
+			ldx #ballPos
+			staa 0,x
+			stab 1,x
+			
+			rts 									;Ende
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Interrupt-Timer fuer den Ball
 ; -----------------------------------------------------------------------------

@@ -6,21 +6,54 @@
      
 		switch VarSection
 ;Variablen
-PunkteA ds.b 1									;Punkte des ersten Spielers
-PunkteB ds.b 1									;Punkte des zweiten Spielers
-PunkteAasString ds.b 4						;Punkte des ersten Spielers
-PunkteBasString ds.b 4						;Punkte des zweiten Spielers
+PunkteA ds.w 1									;Punkte des ersten Spielers
+PunkteB ds.w 1									;Punkte des zweiten Spielers
+PunkteAasString ds.b 4							;Punkte des ersten Spielers
+PunkteBasString ds.b 4							;Punkte des zweiten Spielers
 segment ds.b 1									;welches Segment als naechstes gezeigt wird
 
 		switch RomSection
 ;Konstanten
+Numbers	dc.b				$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
+							;$#00111111,$#00000110,$#01011011,
+							;$#01001111,$#01100110,$#01101101,
+							;$#01111101,$#00000111,$#01111111,
+							;$#01101111
 
 ; -----------------------------------------------------------------------------
 ;	wandelt die Punkte der Spieler in Strings um 
 ; -----------------------------------------------------------------------------
 pointsToString
-			;TODO
+			ldd PunkteA
+			ldy #PunkteAasString
+			jsr Umwandlung16BitWert
+						
+			ldd PunkteB
+			ldy #PunkteBasString
+			jsr Umwandlung16BitWert
+			
 			rts										;Ende
+			
+; -----------------------------------------------------------------------------
+;	wandelt die Punkte der Spieler aus Dezimal in 7-Segment-Zahlen um
+; -----------------------------------------------------------------------------
+pointsToSegments
+			ldaa #8
+			ldx #PunkteAasString
+			
+pointsToSegmentsLoop
+			ldab 0,x
+			ldy #Numbers
+			aby
+			ldab 0,y
+			stab 0,x
+			
+			inx
+			deca
+			bne pointsToSegmentsLoop
+			
+			rts										;Ende
+			
 
 ; -----------------------------------------------------------------------------
 ;	Initialisiert die Verbindung mit der 7-Segment-Anzeige
@@ -51,22 +84,23 @@ initSegmentTimer
 ;	Timer 1
 ;	aktualisiert die 7-Segment-Anzeige		
 ; -----------------------------------------------------------------------------
-isrOC1
-			;TODO: Wert ausgeben: noch schauen, was man braucht!!!
-			;Zahlen kodieren in Konstante
-			;PunkteAasString+segment = Zeichen
+isrOC1			
+			ldy #PunkteAasString
+			ldab segment
+			aby									;Segment-Index raufaddieren
+			
+			ldaa 0,y
+			
 			staa PIO_A					
 			stab PIO_C							;0 = links, 7 = rechts
 			
-			
-			
-			ldab segment							;Segment weiterstellen
+			ldab segment						;Segment weiterstellen
 			incb
-			andb #%00000111				;nur die letzen 3 Bit sind interessant
+			andb #%00000111						;nur die letzen 3 Bit sind interessant
 			stab segment
 			
-														;Timer einstellen
-			ldd TOC1								;Frequenz einstellen
+												;Timer einstellen
+			ldd TOC1							;Frequenz einstellen
 			addd #2000							;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
 														;-> nach 1000 us wieder interrupten
 			std TOC1
