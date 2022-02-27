@@ -23,6 +23,8 @@ columns dc.b 128
 pagesInBits dc.b 64
 pageLength dc.b 8
 batSize dc.b 8
+bat1X	dc.b	1
+bat2X	dc.b	126
 
 
 deleteBall
@@ -110,13 +112,13 @@ setBats
 		ldab BatPos1
 		jsr setBat
 		ldx #Schlaeger1
-		ldaa #1
+		ldaa bat1X
 		jsr setBatLCD
 		
 		ldx #Schlaeger2
 		ldab BatPos2
 		jsr setBat
-		ldaa #126
+		ldaa bat2X
 		ldx #Schlaeger2
 		jsr setBatLCD
 		
