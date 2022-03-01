@@ -16,22 +16,81 @@ bitNum ds.b 1
 startBit ds.b 1
 endBit ds.b 1									;Bit nach dem letzten zulässigen Bit
 
+x_pos ds.b 1
+y_pos ds.b 1
+
 		switch RomSection
 ;Konstanten
 pages dc.b 8
 columns dc.b 128
 pagesInBits dc.b 64
 pageLength dc.b 8
-batSize dc.b 8
+batSize dc.b 9
 bat1X	dc.b	1
 bat2X	dc.b	126
 
 
+; -----------------------------------------------------------------------------
+;   Loescht den Ball auf dem Display
+;	A = X-Position
+;	B = Y-Position
+; -----------------------------------------------------------------------------
 deleteBall
+		;TODO: interrupts unterbinden, sodass sie nicht mehr die Baelle nur teilweise loeschen
+		;staa x_pos
+		stab y_pos
+		;sei
+		;ldaa x_pos
+		;ldab y_pos
+		jsr LCDcolumn
+		
+		ldaa y_pos
+		lsra
+		lsra
+		lsra
+		jsr LCDpage
+		
+		ldaa #0
+		jsr LCDdata
+		;cli
+		
 		rts											;Ende
 		
+; -----------------------------------------------------------------------------
+;   Setzt den Ball auf dem Display
+;	A = X-Position
+;	B = Y-Position
+; -----------------------------------------------------------------------------
 loadBall
+		;staa x_pos
+		stab y_pos
+		;sei
+		;ldaa x_pos
+		;ldab y_pos
+		jsr LCDcolumn
 		
+		ldaa y_pos
+		lsra
+		lsra
+		lsra
+		jsr LCDpage
+		
+		ldab y_pos
+		andb #%00000111			;Divisionsrest /8 fuer das Bit in der Page
+		incb
+		
+		ldaa #1
+loadBallLoop
+		decb
+		beq loadBallEnd
+		
+		lsla
+		bra loadBallLoop
+		
+loadBallEnd
+		;Daten in A
+		jsr LCDdata
+		;cli
 		rts											;Ende
 
 ; -----------------------------------------------------------------------------
@@ -48,6 +107,7 @@ setBat
 		staa bitNum
 		stab startBit
 		addb batSize
+		decb
 		stab endBit
 		ldaa startBit
 		ldab endBit
@@ -83,9 +143,7 @@ EndSetBatLoop
 EndSetBatLoops				;Page fertig
 		staa 0,x
 		inx
-		
-		;jsr debug
-		;jsr zeilenumbruch
+
 		dey
 		beq EndeSetBat
 		
@@ -105,7 +163,7 @@ EndeSetBat
 ;	nutzt A,B,X
 ;	A = Position Schlaeger 1
 ;	B = Position Schlaeger 2
-;	Poition in Hexa: A = 0 - 37, B = 0 - 37
+;	Poition in Hexa: A = 0 - 37, B = 0 - 37 TODO: Zahlen ueberpruefen!!!
 ; -----------------------------------------------------------------------------
 setBats
 		ldx #Schlaeger1
@@ -115,12 +173,22 @@ setBats
 		ldaa bat1X
 		jsr setBatLCD
 		
+		ldaa BatPos1
+		adda batSize
+		deca
+		staa BatPos1End
+		
 		ldx #Schlaeger2
 		ldab BatPos2
 		jsr setBat
 		ldaa bat2X
 		ldx #Schlaeger2
 		jsr setBatLCD
+		
+		ldaa BatPos2
+		adda batSize
+		deca
+		staa BatPos2End
 		
 		rts					;Ende
 
@@ -137,10 +205,8 @@ setBatLCD
 		staa LCDcurrentPage
 		
 		ldab #8										;Schleifendurchlaeufe, da 8 Zeilen
-		
 setBatLCDLoop
 		ldaa batX									;Spalte einstellen
-		
 		jsr LCDcolumn
 		
 		ldaa LCDcurrentPage							;Zeile einstellen

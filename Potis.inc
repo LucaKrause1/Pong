@@ -9,6 +9,8 @@
 
 BatPos1 ds.b	1						;Position des ersten Schlaegers
 BatPos2 ds.b	1						;Position des zweiten Schlaegers
+BatPos1End ds.b	1
+BatPos2End ds.b	1
 
 										;Poti-Maximalwert = 255
 div8 ds.b 1								;Potiposition /8
@@ -17,10 +19,15 @@ div32 ds.b 1							;Potiposition /32
 div64 ds.b 1							;Potiposition /64
 div128 ds.b 1							;Potiposition /128
 
+i ds.b 1
+j ds.b 1
+lol ds.b 1
+
 
 		switch RomSection
 ;Konstanten
-Schlaegerbreite dc.b 8
+
+maxY dc.b 56
 
 ; -----------------------------------------------------------------------------
 ;	transformiert die Koordinaten eines Schlaegers auf max 55 
@@ -30,6 +37,27 @@ Schlaegerbreite dc.b 8
 ;	Ergebnis in A
 ; -----------------------------------------------------------------------------
 mapCoord
+		;bra lols
+		lsra
+		lsra
+		staa i
+		lsra
+		lsra
+		lsra
+		staa j
+		ldaa i
+		suba j
+		
+		cmpa maxY
+		
+		bne mapCoordEnd
+		ldaa maxY
+		deca
+		
+mapCoordEnd
+		inca
+		rts								;Ende
+lols	
 		lsra								;/2
 		lsra								;/4
 		lsra								;/8
@@ -48,6 +76,8 @@ mapCoord
 		adda div32
 		adda div16
 		adda div8
+		
+		inca
 		
 		rts								;Ende
 

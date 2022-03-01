@@ -38,19 +38,13 @@ RomSection	Section
 Start	
 			lds #$3FFF		;Stack-Pointer initialisieren
 			
-			jsr initAll		
+			jsr initAll
 			
-			ldd #1234		;Beispiel-Punkte
-			std PunkteA
-			ldd #5678
-			std PunkteB	
 			
-			jsr pointsToString
-			jsr pointsToSegments
+			jsr initBall
+			jsr initBallTimer
 			
-			ldaa #0
-			staa PositionAVorher
-			staa PositionBVorher
+			bra Play
 			
 SchlaegerDarstellen
 			;Schlaeger in A und B
@@ -68,7 +62,7 @@ SchlaegerDarstellen
 			
 			jsr setBats
 						
-Play	
+Play	 
 			;Schlaeger in A und B
 			jsr startADC
 			staa BatPos1
@@ -77,19 +71,19 @@ Play
 			;konvertiere Schlaeger
 			jsr transformCoords			;transformierte Koordinaten in BatPos1 und BatPos2
 			
-			ldaa BatPos1
-			ldab BatPos2
-			cmpa PositionAVorher
-			bne ShowNewPosOfBats		 
+			;ldaa BatPos1
+			;ldab BatPos2
+			;cmpa PositionAVorher
+			;bne ShowNewPosOfBats		 
 Same		
-			cmpb PositionBVorher
-			beq Play
+			;cmpb PositionBVorher
+			;beq Play
 
 ShowNewPosOfBats
 			ldaa BatPos1
-			staa PositionAVorher
+			;staa PositionAVorher
 			ldaa BatPos2
-			staa PositionBVorher
+			;staa PositionBVorher
 			
 			jsr setBats
 
@@ -137,7 +131,7 @@ VecTOF			dc.w Error				; $FFDE Timer Overflow
 VecTOC5			dc.w Error				; $FFE0 Timer Output Compare 5
 VecTOC4			dc.w Error				; $FFE2 Timer Output Compare 4
 VecTOC3			dc.w Error				; $FFE4 Timer Output Compare 3
-VecTOC2			dc.w Error				; $FFE6 Timer Output Compare 2
+VecTOC2			dc.w isrOC2				; $FFE6 Timer Output Compare 2
 VecTOC1			dc.w isrOC1				; $FFE8 Timer Output Compare 1
 VecTIC3			dc.w Error				; $FFEA Timer Input Capture 3
 VecTIC2			dc.w Error				; $FFEC Timer Input Capture 2

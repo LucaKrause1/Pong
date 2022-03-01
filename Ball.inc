@@ -17,7 +17,7 @@ Geschwindigkeit ds.w	1				;Geschwindigkeit des Balls,
 		switch RomSection
 ;Konstanten
 
-StartGeschwindigkeit dc.w 2000
+StartGeschwindigkeit dc.w 65000
 startX 				dc.b	64
 starty 				dc.b	32
 startXMove		dc.b	1
@@ -26,7 +26,7 @@ lastX					dc.b	127
 lastY					dc.b	63
 
 
-
+startNewGame
 
 ; -----------------------------------------------------------------------------
 ;	Setzt den Ball auf die Startposition und Bewegung jedes Spiels
@@ -45,12 +45,16 @@ initBall
 			ldaa StartGeschwindigkeit
 			staa Geschwindigkeit
 			
+			ldaa BallX
+			ldab BallY
+			jsr loadBall
+			
 			rts 									;Ende
 			
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Interrupt-Timer fuer den Ball
 ; -----------------------------------------------------------------------------
-BallTimer
+initBallTimer
 			ldd TOC2
 			addd StartGeschwindigkeit		;Timer einstellen
 			std TOC2
@@ -58,55 +62,6 @@ BallTimer
 			bset TMSK1, #%01000000  
 			rts										;Ende
 			
-; -----------------------------------------------------------------------------
-;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
-; -----------------------------------------------------------------------------
-moveBall
-		;TODO: Abprallen und vorbei an Ball!!!
-			ldaa BallX
-			adda moveX
-			staa BallX
-			
-			;ueberpruefen, ob beim naechsten Move die X-Grenzen/Schlaeger uebertreten werden
-			cmpa bat1X
-			bne moveBallIndexOkay1
-			
-			jsr initBall
-			bra moveBallIndexOkay4
-			
-moveBallIndexOkay1
-			cmpa bat2X
-			bne moveBallIndexOkay2
-			
-			jsr initBall
-			bra moveBallIndexOkay4
-			
-moveBallIndexOkay2
-
-			
-			
-;ueberpruefen, ob beim naechsten Move die Y-Grenzen uebertreten werden
-			ldaa BallY
-			adda moveY
-			staa BallY
-			
-			
-			cmpa lastY
-			blt moveBallIndexOkay3
-			
-			ldaa #-1
-			staa moveY
-			
-moveBallIndexOkay3
-			cmpa #0
-			blt moveBallIndexOkay4
-			
-			ldaa #1
-			staa moveY
-			
-moveBallIndexOkay4
-			
-			rts										;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
@@ -118,16 +73,116 @@ isrOC2
 			ldab BallY
 			jsr deleteBall
 			
+			jsr moveBall
+			
+			ldaa BallX
+			ldab BallY
 			jsr loadBall
+			
+			;TODO: Geschwindikeit erkoehen? -> Wert verringern!!!
 														;Timer einstellen
-			ldd TOC2								;Frequenz einstellen
-			addd Geschwindigkeit				;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
+			ldd TOC2									;Frequenz einstellen
+			addd Geschwindigkeit						;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
 														;-> nach 1000 us wieder interrupten
 			std TOC2
 			
 			;Flag zuruecksetzen
-			bset TFLG1,  #%10000000	
+			bset TFLG1,  #%10000000
 			
 			rti											;Ende Interrupt
+			
+; -----------------------------------------------------------------------------
+;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
+; -----------------------------------------------------------------------------
+moveBall
+			;Bewegen
+			ldaa BallX
+			adda moveX
+			staa BallX
+			
+			ldaa BallY
+			adda moveY
+			staa BallY
+			
+			;obere Display-Grenze
+			ldaa BallY
+			cmpa #0
+			
+			bne DidntHitUpperBorder
+			
+			ldaa #1
+			staa moveY
+			
+DidntHitUpperBorder	
+			;untere Display-Grenze
+			ldaa BallY
+			cmpa lastY
+			
+			bne DidntHitLowerBorder
+			
+			ldaa #-1
+			staa moveY
+
+DidntHitLowerBorder
+
+XUeberpruefung
+			ldaa bat1X
+			inca
+			cmpa BallX
+			beq Left			;Ist der Ball vor der Zeile des linken Schlaegers?
+NotLeft		
+			ldaa bat2X
+			deca
+			cmpa BallX
+			beq Right			;Ist der Ball vor der Zeile des rechten Schlaegers?
+NotRight
+			bra EndMove
+			;TODO: bis hier funktioniert es!
+			;werden nicht die Schlaeger getroffen, wird manchmal zurueckgeschlagen 
+			;und manchmal bekommt der andere Spieler Punkte
+Left
+			ldaa BallY
+			cmpa BatPos1
+			bls MovingPunkteB
+			cmpa BatPos1End
+			bhi MovingPunkteB
+			
+			ldaa #1
+			staa moveX
+			bra EndMove
+Right
+			ldaa BallY
+			cmpa BatPos2
+			bls MovingPunkteA
+			cmpa BatPos2End
+			bhi MovingPunkteA
+			
+			ldaa #-1
+			staa moveX
+			bra EndMove
+			
+MovingPunkteA
+			ldd PunkteA
+			addd #1
+			std PunkteA
+			bra startingNewGame
+MovingPunkteB
+			ldd PunkteB
+			addd #1
+			std PunkteB
+			bra startingNewGame
+			
+startingNewGame
+			jsr pointsToString
+			jsr PointsToSegments
+			
+			ldaa BallX
+			ldab BallY
+			jsr deleteBall
+			jsr initBall
+			
+EndMove			
+			rts;Ende
+
 
 

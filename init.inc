@@ -21,10 +21,17 @@ initAll
 											;Potis
 			jsr initADC				;AD-Wandler
 			
+			;Punkte
+			ldd #0		;Beispiel-Punkte
+			std PunkteA
+			std PunkteB	
+			jsr pointsToString
+			jsr pointsToSegments
 			jsr initSegments		;7-Segment Anzeigen
 			jsr initSegmentTimer
 			
-			;jsr initBallTimer		;Ball starten -> evtl. erst bei Spielstart starten und wieder abbrechen?
+			
+			
 			
 			cli
 			
