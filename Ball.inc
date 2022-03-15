@@ -13,16 +13,20 @@ BallX		ds.b 	1							;Ballposition in X-Richtung
 BallY		ds.b	1							;Ballposition in Y-Richtung
 Geschwindigkeit ds.w	1						;Geschwindigkeit des Balls, 
 												;je kleiner, desto schneller
+timerSeconds	ds.b 1							;wird runtergezaelt, 
+												;damit der Ball laenger sichtbar ist
 
 		switch RomSection
 ;Konstanten
 StartGeschwindigkeit dc.w 65000
+maxGeschwindigkeit dc.w		20000
 startX 				dc.b	64
 starty 				dc.b	32
 startXMove		dc.b	1
 startYMove		dc.b	1
 lastX					dc.b	127
 lastY					dc.b	63
+timerSecondsReset		dc.b 	1
 
 
 startNewGame
@@ -71,6 +75,10 @@ initBallTimer
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 isrOC2
+			dec timerSeconds			;Soll der Ball schon neu gesetzt werden?
+			bne NotReloadingBall
+			
+LoadingBall
 			ldaa BallX
 			ldab BallY
 			jsr deleteBall
@@ -81,7 +89,17 @@ isrOC2
 			ldab BallY
 			jsr loadBall
 			
-			;TODO: Geschwindikeit erkoehen? -> Wert verringern!!!
+			ldaa timerSecondsReset
+			staa timerSeconds
+			
+NotReloadingBall
+			ldd Geschwindigkeit							;Geschwindigkeit des Balls erhoehen
+			cmpa maxGeschwindigkeit
+			bmi NoSpeedCorrection
+			subd #10
+			std Geschwindigkeit
+			
+NoSpeedCorrection
 														;Timer einstellen
 			ldd TOC2									;Frequenz einstellen
 			addd Geschwindigkeit						;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz

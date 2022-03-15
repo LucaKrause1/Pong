@@ -40,29 +40,10 @@ Start
 			
 			jsr initAll
 			
-			
 			jsr initBall
 			jsr initBallTimer
 			
-			bra Play
-			
-SchlaegerDarstellen
-			;Schlaeger in A und B
-			jsr startADC
-			staa BatPos1
-			stab BatPos2
-	
-			;konvertiere Schlaeger
-			jsr transformCoords			;transformierte Koordinaten in BatPos1 und BatPos2
-			
-			ldaa BatPos1
-			staa PositionAVorher
-			ldaa BatPos2
-			staa PositionBVorher
-			
-			jsr setBats
-
-; -----------------------------------------------------------------------------
+; -----------------------------------------------------------------------------	
 ;   Endlosspielschleife
 ; -----------------------------------------------------------------------------
 Play	 
@@ -74,27 +55,30 @@ Play
 			;konvertiere Schlaeger
 			jsr transformCoords			;transformierte Koordinaten in BatPos1 und BatPos2
 			
-			;ldaa BatPos1
-			;ldab BatPos2
-			;cmpa PositionAVorher
-			;bne ShowNewPosOfBats		 
-Same		
-			;cmpb PositionBVorher
-			;beq Play
-
-ShowNewPosOfBats
-			ldaa BatPos1
-			;staa PositionAVorher
-			ldaa BatPos2
-			;staa PositionBVorher
-			
 			jsr setBats
+			
+			
+			ldaa PIO_B
+			jsr debug
+			jsr zeilenumbruch
+			
+			ldaa PIO_B
+			anda #%00000001
+			
+			beq Reset					;Spiel zuruecksetzen, falls "0" gedrueckt		
 
 			bra Play
+; -----------------------------------------------------------------------------	
+;   Setzt das gesamte Spiel zurueck
+; -----------------------------------------------------------------------------
+Reset
+			sei
 			
-Ende
-			bra *
-
+			ldaa BallX
+			ldab BallY
+			jsr deleteBall
+			
+			bra Start
 
 ; -----------------------------------------------------------------------------
 ;	Include-Dateien
@@ -106,7 +90,6 @@ Ende
 			include Ball.inc
 			include Debug.inc
 			include Ein_Ausgabe.inc
-			
 					
 			include includes\LCDfont.inc		
 			include includes\LCD_communication.inc

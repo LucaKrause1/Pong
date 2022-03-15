@@ -159,9 +159,7 @@ EndeSetBat
 ;	-> gesamte Y-Richtung
 ;	-> erstmal Schlaeger = Breite 8
 ;	nutzt A,B,X
-;	A = Position Schlaeger 1
-;	B = Position Schlaeger 2
-;	Poition in Hexa: A = 0 - 37, B = 0 - 37 TODO: Zahlen ueberpruefen!!!
+;	Position in Hexa: A = 0 - 37, B = 0 - 37 TODO: Zahlen ueberpruefen!!!
 ; -----------------------------------------------------------------------------
 setBats
 		ldx #Schlaeger1
