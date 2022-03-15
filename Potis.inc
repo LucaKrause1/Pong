@@ -1,9 +1,8 @@
 ;* Datei: Potis.inc
 ; -----------------------------------------------------------------------------
-;   TODO: kurze Beschreibung
+;   Wandelt die Potentiometer-Werte auf ihr erlaubtes Maximum
 ; -----------------------------------------------------------------------------
 
-     
 		switch VarSection
 ;Variablen
 
@@ -21,8 +20,6 @@ div128 ds.b 1							;Potiposition /128
 
 i ds.b 1
 j ds.b 1
-lol ds.b 1
-
 
 		switch RomSection
 ;Konstanten
@@ -37,7 +34,6 @@ maxY dc.b 56
 ;	Ergebnis in A
 ; -----------------------------------------------------------------------------
 mapCoord
-		;bra lols
 		lsra
 		lsra
 		staa i
@@ -55,30 +51,6 @@ mapCoord
 		deca
 		
 mapCoordEnd
-		inca
-		rts								;Ende
-lols	
-		lsra								;/2
-		lsra								;/4
-		lsra								;/8
-		staa div8
-		lsra								;/16
-		staa div16
-		lsra								;/32
-		staa div32
-		lsra								;/64
-		staa div64
-		lsra								;/128
-		staa div128
-		
-		;div128 schon im Akku A
-		adda div128
-		adda div32
-		adda div16
-		adda div8
-		
-		inca
-		
 		rts								;Ende
 
 ; -----------------------------------------------------------------------------

@@ -62,11 +62,8 @@ deleteBall
 ;	B = Y-Position
 ; -----------------------------------------------------------------------------
 loadBall
-		;staa x_pos
 		stab y_pos
 		;sei
-		;ldaa x_pos
-		;ldab y_pos
 		jsr LCDcolumn
 		
 		ldaa y_pos
@@ -105,6 +102,7 @@ loadBallEnd
 setBat
 		ldaa #0
 		staa bitNum
+		incb
 		stab startBit
 		addb batSize
 		decb

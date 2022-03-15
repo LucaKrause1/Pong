@@ -22,6 +22,7 @@ Numbers	dc.b				$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
 
 ; -----------------------------------------------------------------------------
 ;	wandelt die Punkte der Spieler in Strings um 
+;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
 pointsToString
 			ldd PunkteA
@@ -36,6 +37,7 @@ pointsToString
 			
 ; -----------------------------------------------------------------------------
 ;	wandelt die Punkte der Spieler aus Dezimal in 7-Segment-Zahlen um
+;	nutzt A,B,X,Y
 ; -----------------------------------------------------------------------------
 pointsToSegments
 			ldaa #8
@@ -82,7 +84,8 @@ initSegmentTimer
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
 ;	Timer 1
-;	aktualisiert die 7-Segment-Anzeige		
+;	Dieser Timer aktualisiert die 7-Segment-Anzeige
+;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
 isrOC1			
 			ldy #PunkteAasString

@@ -61,7 +61,10 @@ SchlaegerDarstellen
 			staa PositionBVorher
 			
 			jsr setBats
-						
+
+; -----------------------------------------------------------------------------
+;   Endlosspielschleife
+; -----------------------------------------------------------------------------
 Play	 
 			;Schlaeger in A und B
 			jsr startADC
@@ -105,7 +108,7 @@ Ende
 			include Ein_Ausgabe.inc
 			
 					
-			include includes\LCDfont.inc		;TODO: an richtiger Stelle?
+			include includes\LCDfont.inc		
 			include includes\LCD_communication.inc
 			
 			include includes\AD_Wandler.inc

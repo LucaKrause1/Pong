@@ -1,22 +1,21 @@
 ;* Datei: Ball.inc
 ; -----------------------------------------------------------------------------
 ;   Realisiert den Ball und seine Bewegung
+; 	Author: 			Luca Manuel Krause
 ; -----------------------------------------------------------------------------
 
      
 		switch VarSection
 ;Variablen
-
-moveX		ds.b 	1						;Ballaenderung in X-Richtung
-moveY		ds.b	1						;Ballaenderung in Y-Richtung
+moveX		ds.b 	1							;Ballaenderung in X-Richtung
+moveY		ds.b	1							;Ballaenderung in Y-Richtung
 BallX		ds.b 	1							;Ballposition in X-Richtung
 BallY		ds.b	1							;Ballposition in Y-Richtung
-Geschwindigkeit ds.w	1				;Geschwindigkeit des Balls, 
+Geschwindigkeit ds.w	1						;Geschwindigkeit des Balls, 
 												;je kleiner, desto schneller
 
 		switch RomSection
 ;Konstanten
-
 StartGeschwindigkeit dc.w 65000
 startX 				dc.b	64
 starty 				dc.b	32
@@ -29,7 +28,8 @@ lastY					dc.b	63
 startNewGame
 
 ; -----------------------------------------------------------------------------
-;	Setzt den Ball auf die Startposition und Bewegung jedes Spiels
+;	Setzt den Ball fuer jedes Spiel auf die Startposition
+;	nutzt A,B,X,Y
 ; -----------------------------------------------------------------------------
 initBall
 			ldaa startX
@@ -53,6 +53,7 @@ initBall
 			
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Interrupt-Timer fuer den Ball
+;	Nutzt A,B
 ; -----------------------------------------------------------------------------
 initBallTimer
 			ldd TOC2
@@ -66,7 +67,8 @@ initBallTimer
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
 ;	Timer 2
-;	aktualisiert den Ball
+;	Dieser Timer aktualisiert den Ball auf dem Spielfeld
+;	nutzt A,B
 ; -----------------------------------------------------------------------------
 isrOC2
 			ldaa BallX
@@ -93,6 +95,7 @@ isrOC2
 			
 ; -----------------------------------------------------------------------------
 ;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
+;	nutzt A,B,
 ; -----------------------------------------------------------------------------
 moveBall
 			;Bewegen
@@ -137,13 +140,10 @@ NotLeft
 			beq Right			;Ist der Ball vor der Zeile des rechten Schlaegers?
 NotRight
 			bra EndMove
-			;TODO: bis hier funktioniert es!
-			;werden nicht die Schlaeger getroffen, wird manchmal zurueckgeschlagen 
-			;und manchmal bekommt der andere Spieler Punkte
 Left
 			ldaa BallY
 			cmpa BatPos1
-			bls MovingPunkteB
+			blo MovingPunkteB
 			cmpa BatPos1End
 			bhi MovingPunkteB
 			
@@ -153,7 +153,7 @@ Left
 Right
 			ldaa BallY
 			cmpa BatPos2
-			bls MovingPunkteA
+			blo MovingPunkteA
 			cmpa BatPos2End
 			bhi MovingPunkteA
 			
@@ -182,7 +182,7 @@ startingNewGame
 			jsr initBall
 			
 EndMove			
-			rts;Ende
+			rts						;Ende
 
 
 
