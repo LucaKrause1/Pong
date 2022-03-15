@@ -21,8 +21,6 @@
 
 VarSection	Section
 			org $0040
-PositionAVorher ds.b 1
-PositionBVorher	ds.b 1
 change 			ds.b 1
 
 ; -----------------------------------------------------------------------------
@@ -57,22 +55,18 @@ Play
 			
 			jsr setBats
 			
-			
+			;Tastenueberpruefung
 			ldaa PIO_B
-			jsr debug
-			jsr zeilenumbruch
+			anda #%00000001				;Spiel zuruecksetzen, falls "0" gedrueckt	
 			
-			ldaa PIO_B
-			anda #%00000001
-			
-			beq Reset					;Spiel zuruecksetzen, falls "0" gedrueckt		
+			beq Reset						
 
 			bra Play
 ; -----------------------------------------------------------------------------	
 ;   Setzt das gesamte Spiel zurueck
 ; -----------------------------------------------------------------------------
 Reset
-			sei
+			sei							;Interrupts unterbinden
 			
 			ldaa BallX
 			ldab BallY

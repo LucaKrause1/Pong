@@ -11,13 +11,6 @@ BatPos2 ds.b	1						;Position des zweiten Schlaegers
 BatPos1End ds.b	1
 BatPos2End ds.b	1
 
-										;Poti-Maximalwert = 255
-div8 ds.b 1								;Potiposition /8
-div16 ds.b 1							;Potiposition /16
-div32 ds.b 1							;Potiposition /32
-div64 ds.b 1							;Potiposition /64
-div128 ds.b 1							;Potiposition /128
-
 i ds.b 1
 j ds.b 1
 
@@ -27,7 +20,7 @@ j ds.b 1
 maxY dc.b 56
 
 ; -----------------------------------------------------------------------------
-;	transformiert die Koordinaten eines Schlaegers auf max 55 
+;	transformiert die Koordinaten eines Schlaegers von 255 auf max 55 
 ;	(Schlaeger immer im Bild)
 ;	Koordinaten in A
 ;	nutzt A

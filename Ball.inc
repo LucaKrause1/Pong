@@ -26,10 +26,7 @@ startXMove		dc.b	1
 startYMove		dc.b	1
 lastX					dc.b	127
 lastY					dc.b	63
-timerSecondsReset		dc.b 	1
-
-
-startNewGame
+timerSecondsReset		dc.b 	2
 
 ; -----------------------------------------------------------------------------
 ;	Setzt den Ball fuer jedes Spiel auf die Startposition
@@ -66,7 +63,6 @@ initBallTimer
 			
 			bset TMSK1, #%01000000  
 			rts										;Ende
-			
 
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
