@@ -1,6 +1,8 @@
 ;* Datei: init.inc
 ; -----------------------------------------------------------------------------
 ;   kümmert sich um alle Initialisierungen vor dem Ersten Spiel
+; 	Author: 			Luca Manuel Krause
+;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
 
      
@@ -11,19 +13,35 @@
 ;Konstanten
 
 ; -----------------------------------------------------------------------------
+;   Initialisiert alle Variablen mit einer Nullen vor jedem Spielstart
+; -----------------------------------------------------------------------------
+delete
+			ldx #dummy						;Adresse der ersten Variable
+			ldaa #0
+deleteLoop
+			staa 0,x							;loeschen
+			inx
+			cpx #varEnd						; alle erwischt?
+			bne deleteLoop					; sonst weiter
+		
+			rts									;Ende
+
+; -----------------------------------------------------------------------------
 ;   Initialisiert alle nötigen Schnittstellen und Punkte vor dem Spiel
 ; -----------------------------------------------------------------------------
 initAll
-			jsr initSPI 				;SPI-Schnittstelle
+			jsr delete						;Variablen initialisieren
+
+			jsr initSPI 					;SPI-Schnittstelle
 			
-			jsr initLCD 				;LCD-Display
+			jsr initLCD 					;LCD-Display
 			jsr LoeschLCD
 											
-										;Potis
+												;Potis
 			jsr initADC					;AD-Wandler
 			
 			;Punkte
-			ldd #0						;Start-Punkte
+			ldd #0							;Start-Punkte
 			std PunkteA
 			std PunkteB	
 			jsr pointsToString
@@ -33,4 +51,4 @@ initAll
 			
 			cli
 			
-			rts							;Ende
+			rts								;Ende

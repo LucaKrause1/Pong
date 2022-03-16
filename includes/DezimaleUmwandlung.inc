@@ -1,6 +1,8 @@
 ;* Datei: DezimaleUmwandlung.inc
 ; -----------------------------------------------------------------------------
-;   TODO: kurze Beschreibung
+;   Diese Datei ist hauptsaechlich dazu da, 16-Bit-Werte in einem 4-Bit langen String zu speichern.
+; 	Author: 			Luca Manuel Krause
+;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
 
 		switch VarSection

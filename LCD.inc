@@ -1,6 +1,8 @@
 ;* Datei: LCD.inc
 ; -----------------------------------------------------------------------------
-;   TODO: kurze Beschreibung
+;	Darstellung von Elementen auf dem Spielfeld
+; 	Author: 			Luca Manuel Krause
+;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
 
 		switch VarSection

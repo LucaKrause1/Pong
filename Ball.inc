@@ -2,37 +2,43 @@
 ; -----------------------------------------------------------------------------
 ;   Realisiert den Ball und seine Bewegung
 ; 	Author: 			Luca Manuel Krause
-; -----------------------------------------------------------------------------
-
-     
+;	Datum:				18.01.2022
+; -----------------------------------------------------------------------------     
 		switch VarSection
 ;Variablen
-moveX		ds.b 	1							;Ballaenderung in X-Richtung
-moveY		ds.b	1							;Ballaenderung in Y-Richtung
-BallX		ds.b 	1							;Ballposition in X-Richtung
-BallY		ds.b	1							;Ballposition in Y-Richtung
-Geschwindigkeit ds.w	1						;Geschwindigkeit des Balls, 
-												;je kleiner, desto schneller
-timerSeconds	ds.b 1							;wird runtergezaelt, 
-												;damit der Ball laenger sichtbar ist
+BallX			ds.b 	1								;Ballposition in X-Richtung
+BallY			ds.b	1								;Ballposition in Y-Richtung
+moveX		ds.b 	1								;Ballaenderung in X-Richtung
+moveY		ds.b	1								;Ballaenderung in Y-Richtung
+speed 		ds.w	1								;Geschwindigkeit des Balls, 
+														;je kleiner, desto schneller
+														;realisiert als Einheit 
+														;fuer den Timer des Balls
+timerSeconds	ds.b 1							;wird runtergezaehlt, 
+														;damit der Ball laenger sichtbar ist
 
 		switch RomSection
 ;Konstanten
-StartGeschwindigkeit dc.w 65000
-maxGeschwindigkeit dc.w		20000
-startX 				dc.b	64
-starty 				dc.b	32
-startXMove		dc.b	1
-startYMove		dc.b	1
-lastX					dc.b	127
-lastY					dc.b	63
-timerSecondsReset		dc.b 	2
+StartGeschwindigkeit 	dc.w 65000
+maxGeschwindigkeit 	dc.w	20000
+startX 						dc.b	64
+starty 						dc.b	32
+startXMove				dc.b	1
+startYMove				dc.b	1
+lastX							dc.b	127
+lastY							dc.b	63
+timerSecondsReset		dc.b 	2				;Grundschnelligkeit in Zyklen des Balls,
+														; um die 2-Byte der Timer-Grenze zu umgehen.
 
 ; -----------------------------------------------------------------------------
-;	Setzt den Ball fuer jedes Spiel auf die Startposition
+;	Initialisiert den Ball fuer jedes Spiel
 ;	nutzt A,B,X,Y
+;	keine Parameter
 ; -----------------------------------------------------------------------------
 initBall
+			psha
+			pshb
+			
 			ldaa startX
 			ldab starty
 			staa BallX
@@ -44,34 +50,45 @@ initBall
 			stab moveY
 			
 			ldaa StartGeschwindigkeit
-			staa Geschwindigkeit
+			staa speed
 			
 			ldaa BallX
 			ldab BallY
 			jsr loadBall
 			
-			rts 									;Ende
+			pulb
+			pula
+			rts 										;Ende
 			
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Interrupt-Timer fuer den Ball
-;	Nutzt A,B
+;	Nutzt D
+;	keine Parameter
 ; -----------------------------------------------------------------------------
 initBallTimer
+			psha
+			pshb
+			
 			ldd TOC2
 			addd StartGeschwindigkeit		;Timer einstellen
 			std TOC2
 			
 			bset TMSK1, #%01000000  
+			
+			pulb
+			pula
 			rts										;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
 ;	Timer 2
-;	Dieser Timer aktualisiert den Ball auf dem Spielfeld
+;	Dieser Timer aktualisiert den Ball nach 
+;	einer vorbestimmten Zeit auf dem Spielfeld.
 ;	nutzt A,B
+;	keine Parameter, da es sich um eine Interrupt Service Routine handelt.
 ; -----------------------------------------------------------------------------
 isrOC2
-			dec timerSeconds			;Soll der Ball schon neu gesetzt werden?
+			dec timerSeconds					;Soll der Ball schon neu gesetzt werden?
 			bne NotReloadingBall
 			
 LoadingBall
@@ -89,16 +106,16 @@ LoadingBall
 			staa timerSeconds
 			
 NotReloadingBall
-			ldd Geschwindigkeit							;Geschwindigkeit des Balls erhoehen
+			ldd speed								;Geschwindigkeit des Balls erhoehen
 			cmpa maxGeschwindigkeit
 			bmi NoSpeedCorrection
 			subd #10
-			std Geschwindigkeit
+			std speed
 			
 NoSpeedCorrection
 														;Timer einstellen
-			ldd TOC2									;Frequenz einstellen
-			addd Geschwindigkeit						;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
+			ldd TOC2								;Frequenz einstellen
+			addd speed							;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
 														;-> nach 1000 us wieder interrupten
 			std TOC2
 			
@@ -146,12 +163,12 @@ XUeberpruefung
 			ldaa bat1X
 			inca
 			cmpa BallX
-			beq Left			;Ist der Ball vor der Zeile des linken Schlaegers?
+			beq Left								;Ist der Ball vor der Zeile des linken Schlaegers?
 NotLeft		
 			ldaa bat2X
 			deca
 			cmpa BallX
-			beq Right			;Ist der Ball vor der Zeile des rechten Schlaegers?
+			beq Right								;Ist der Ball vor der Zeile des rechten Schlaegers?
 NotRight
 			bra EndMove
 Left
@@ -196,7 +213,7 @@ startingNewGame
 			jsr initBall
 			
 EndMove			
-			rts						;Ende
+			rts										;Ende
 
 
 

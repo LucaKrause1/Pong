@@ -1,6 +1,9 @@
 ;* Datei: LCD_communication.inc
 ; -----------------------------------------------------------------------------
-;   TODO: kurze Beschreibung
+;	Kommunikation mit dem LCD-Display und initiale Subroutinen,
+;	 die mit dem LCD-Display zusammenhaengen
+; 	Author: 			Luca Manuel Krause
+;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
 
 		switch VarSection
@@ -25,7 +28,7 @@ RepeatRows
 
 		ldaa #0							;wird an das Display uebertragen
 		ldab #128						;Initialisiere den Spaltenzaehler mit 128 
-										;->entspricht der maximalen Spaltenzahl des Displays
+											;->entspricht der maximalen Spaltenzahl des Displays
 RepeatForRow
 		ldaa #0							;wird an das Display uebertragen
 		jsr LCDdata					;leeres Byte setzen				

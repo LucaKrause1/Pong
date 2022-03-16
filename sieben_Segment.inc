@@ -1,6 +1,9 @@
 ;* Datei: sieben_Segment.inc
 ; -----------------------------------------------------------------------------
-;   TODO: kurze Beschreibung
+;   Diese Datei befasst sich mit der Darstellung der Pukte 
+;	der beiden Spieler auf der Sieben-Segment-Anzeige
+; 	Author: 			Luca Manuel Krause
+;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
 
      
@@ -14,11 +17,13 @@ segment ds.b 1									;welches Segment als naechstes gezeigt wird
 
 		switch RomSection
 ;Konstanten
+									;Hexadezimale Darstellung der Zahlen
 Numbers	dc.b				$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
-							;$#00111111,$#00000110,$#01011011,
-							;$#01001111,$#01100110,$#01101101,
-							;$#01111101,$#00000111,$#01111111,
-							;$#01101111
+									;Bit-Darstellung der Zahlen
+									;$#00111111,$#00000110,$#01011011,
+									;$#01001111,$#01100110,$#01101101,
+									;$#01111101,$#00000111,$#01111111,
+									;$#01101111
 
 ; -----------------------------------------------------------------------------
 ;	wandelt die Punkte der Spieler in Strings um 

@@ -1,4 +1,9 @@
 ;* Datei: AD_Wandler.inc
+; -----------------------------------------------------------------------------
+;	Empfang der Werte von den Potentiometern ueber den AD-Wandler
+; 	Author: 			Luca Manuel Krause
+;	Datum:				18.01.2022
+; -----------------------------------------------------------------------------
      
 		switch VarSection
 ;Variablen

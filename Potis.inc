@@ -1,6 +1,8 @@
 ;* Datei: Potis.inc
 ; -----------------------------------------------------------------------------
 ;   Wandelt die Potentiometer-Werte auf ihr erlaubtes Maximum
+; 	Author: 			Luca Manuel Krause
+;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
 
 		switch VarSection
