@@ -43,7 +43,7 @@ Start
 			jsr initBallTimer
 			
 ; -----------------------------------------------------------------------------	
-;   Endlosspielschleife
+;   Endlosspielschleife, solange nicht die Taste "0" gedrueckt wird
 ; -----------------------------------------------------------------------------
 Play	 
 			;Schlaeger in A und B
@@ -65,7 +65,9 @@ Play
 			bra Play
 			
 ; -----------------------------------------------------------------------------	
+;	keine Subroutine, um wieder an den Start zu gelangen!!!
 ;   Setzt das gesamte Spiel zurueck
+;	nutzt A,B
 ; -----------------------------------------------------------------------------
 Reset
 			sei									;Interrupts unterbinden, da keine Ballbewegung mehr erlaubt ist 
