@@ -19,12 +19,12 @@ timerSeconds				ds.b 1				;wird runtergezaehlt,
 
 		switch RomSection
 ;Konstanten
-StartSpeed					dc.w	65000
-maxSpeed 					dc.w	20000
+StartSpeed				dc.w	65000
+maxSpeed 				dc.w	20000
 startX 						dc.b	64
 startY 						dc.b	32
-startXMove					dc.b	1
-startYMove					dc.b	1
+startXMove				dc.b	1
+startYMove				dc.b	1
 lastX							dc.b	127
 lastY							dc.b	63
 timerSecondsReset		dc.b 	2				;Grundschnelligkeit in Zyklen des Balls,
@@ -32,7 +32,7 @@ timerSecondsReset		dc.b 	2				;Grundschnelligkeit in Zyklen des Balls,
 
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Ball fuer jedes Spiel
-;	nutzt A,B,X,Y
+;	nutzt A,B
 ;	keine Parameter
 ; -----------------------------------------------------------------------------
 initBall
@@ -70,14 +70,14 @@ initBallTimer
 			pshb
 			
 			ldd TOC2
-			addd StartSpeed						;Timer einstellen
+			addd StartSpeed					;Timer einstellen
 			std TOC2
 			
 			bset TMSK1, #%01000000  
 			
 			pulb
 			pula
-			rts											;Ende
+			rts										;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
@@ -129,6 +129,9 @@ NoSpeedCorrection
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 moveBall
+			psha
+			pshb
+			
 			;Bewegen
 			ldaa BallX
 			adda moveX
@@ -163,7 +166,7 @@ XTest
 			ldaa bat1X
 			inca
 			cmpa BallX
-			beq Left									;Ist der Ball vor der Zeile des linken Schlaegers?
+			beq Left								;Ist der Ball vor der Zeile des linken Schlaegers?
 NotLeft		
 			ldaa bat2X
 			deca
@@ -212,7 +215,9 @@ PlayerGotPoints
 			jsr deleteBall
 			jsr initBall
 			
-EndMove			
+EndMove
+			pulb
+			pula
 			rts											;Ende
 
 

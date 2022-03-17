@@ -12,10 +12,14 @@
 ;Konstanten
 
 ; -----------------------------------------------------------------------------
-;   Initialisiert alle Variablen mit einer Nullen vor jedem Spielstart
+;   Initialisiert alle Variablen mit Nullen vor jedem Spielstart
 ;	nutzt A,X
 ; -----------------------------------------------------------------------------
 delete
+			psha
+			pshx
+			
+			
 			ldx #dummy					;Adresse der ersten Variable
 			ldaa #0
 deleteLoop
@@ -23,13 +27,19 @@ deleteLoop
 			inx
 			cpx #varEnd					;alle erwischt?
 			bne deleteLoop				;sonst weiter
-		
+			
+			pulx
+			pula
 			rts								;Ende
 
 ; -----------------------------------------------------------------------------
 ;   Initialisiert alle nötigen Schnittstellen und Punkte vor dem Spiel
+;	nutzt A,B
 ; -----------------------------------------------------------------------------
 initAll
+			psha
+			pshb
+			
 			jsr delete						;Variablen initialisieren
 
 			jsr initSPI 					;SPI-Schnittstelle
@@ -51,4 +61,6 @@ initAll
 			
 			cli
 			
+			pulb
+			pula
 			rts								;Ende

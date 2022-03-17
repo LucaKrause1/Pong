@@ -20,6 +20,9 @@ page 	ds.b 	1							;Anzahl Zeilen
 ;	nutzt D
 ; -----------------------------------------------------------------------------
 LoeschLCD
+		psha
+		pshb
+		
 		ldaa #9
 		
 RepeatRows
@@ -41,13 +44,17 @@ EndeRow
 		deca
 		bne RepeatRows
 		
+		pulb
+		pula
 		rts									;Ende
 		
 ; -----------------------------------------------------------------------------
 ;  Springt im Display in die naechste Page (an dern Anfang der Zeile)
 ;	nutzt A
 ; -----------------------------------------------------------------------------
-nextRow	
+nextRow
+		psha
+		
 		ldaa #0								;Spalte auf 0 setzen
 		staa column						;TODO: eigentlich nicht notwendig, da nur in der Variable gespeichert wird
 		jsr LCDcolumn
@@ -68,6 +75,7 @@ EndeNextRow							;TODO: diese Zeile  auch nicht mehr nötig, wenn anderes klapp
 		staa page
 		jsr LCDpage
 		
+		pula
 		rts									;Ende
 		
 ; -----------------------------------------------------------------------------
@@ -143,7 +151,7 @@ initSPI
 
 ; -----------------------------------------------------------------------------
 ;	Uebertraegt Bytes an das LCD-Display
-;	nutz A
+;	nutzt A
 ; -----------------------------------------------------------------------------
 SPItransfer   
 		staa  SPDR         				; Byte senden 

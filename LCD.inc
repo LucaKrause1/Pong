@@ -139,6 +139,9 @@ loadBallEnd
 ;	nutzt A,B,X,Y
 ; -----------------------------------------------------------------------------
 setBat
+		psha
+		pshy
+		
 		ldaa #0
 		staa bitNum
 		incb
@@ -186,9 +189,10 @@ EndSetBatLoops								;Page fertig
 		
 		bra BytesSetBatLoop
 
-		
 EndeSetBat
-		
+
+		puly
+		pula
 		rts										;Ende
 
 
@@ -199,6 +203,9 @@ EndeSetBat
 ;	nutzt A,B,X
 ; -----------------------------------------------------------------------------
 setBats
+		psha
+		pshb
+		pshx
 		ldx #Bat1							;Ersten Schlaeger setzen
 		ldab BatPos1
 		jsr setBat
@@ -223,6 +230,9 @@ setBats
 		deca
 		staa BatPos2End
 		
+		pulx
+		pulb
+		pula
 		rts										;Ende
 
 ; -----------------------------------------------------------------------------
@@ -230,9 +240,12 @@ setBats
 ;	Parameter:
 ; 		X = Speicherfeld eines Schlaegers
 ;		A = Spalte
+;	nutzt A,B,X
 ;	gibt 8 Pages untereinander aus!!!!!!!
 ; -----------------------------------------------------------------------------
 setBatLCD
+		pshb
+		pshx
 		staa batX
 		
 		sei										;TODO: Interrupts unterbinden
@@ -265,4 +278,6 @@ setBatLCDLoop
 		
 		cli										;TODO: Interrupts erlauben
 		
+		pulx
+		pulb
 		rts										;Ende

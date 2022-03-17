@@ -18,7 +18,6 @@ j 					ds.b 	1
 
 		switch RomSection
 ;Konstanten
-
 maxY 			dc.b 	56
 
 ; -----------------------------------------------------------------------------
@@ -57,6 +56,9 @@ mapCoordEnd
 ; 	Schlaeger2 = BatPos2
 ; -----------------------------------------------------------------------------
 transformCoords
+		psha
+		pshb
+		
 		ldaa BatPos1
 		ldab #0
 		jsr mapCoord		
@@ -67,4 +69,6 @@ transformCoords
 		jsr mapCoord
 		staa BatPos2
 		
+		pulb
+		pula
 		rts								;Ende
