@@ -8,25 +8,26 @@
 		switch VarSection
 ;Variablen
 
-BatPos1 ds.b	1						;Position des ersten Schlaegers
-BatPos2 ds.b	1						;Position des zweiten Schlaegers
-BatPos1End ds.b	1
-BatPos2End ds.b	1
+BatPos1 		ds.b	1				;Position des ersten Schlaegers
+BatPos2 		ds.b	1				;Position des zweiten Schlaegers
+BatPos1End 	ds.b	1
+BatPos2End 	ds.b	1
 
-i ds.b 1
-j ds.b 1
+i 					ds.b 	1
+j 					ds.b 	1
 
 		switch RomSection
 ;Konstanten
 
-maxY dc.b 56
+maxY 			dc.b 	56
 
 ; -----------------------------------------------------------------------------
-;	transformiert die Koordinaten eines Schlaegers von 255 auf max 55 
+;	transformiert die Koordinaten eines Schlaegers von 255 auf max 55
+;	55 = 0x37
 ;	(Schlaeger immer im Bild)
-;	Koordinaten in A
+;	Schlaegerposition in A
 ;	nutzt A
-;	Ergebnis in A
+;	Ergebnisposition in A
 ; -----------------------------------------------------------------------------
 mapCoord
 		lsra
@@ -49,7 +50,8 @@ mapCoordEnd
 		rts								;Ende
 
 ; -----------------------------------------------------------------------------
-;	transformiert die Koordinaten beider Schlaeger auf max 51 
+;	transformiert die Koordinaten beider Schlaeger auf max 55
+;	55 = 0x37
 ;	(Schlaeger immer im Bild)
 ;	Schlaeger1 = BatPos1
 ; 	Schlaeger2 = BatPos2

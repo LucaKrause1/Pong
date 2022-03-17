@@ -4,19 +4,19 @@
 ; 	Author: 			Luca Manuel Krause
 ;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
-     
+ 
 		switch VarSection
 ;Variablen
 
 		switch RomSection
 ;Konstanten
-kanal 	dc.b 	4 								;4 = Poti links, 5 = Poti rechts
+kanal 	dc.b 	4 							;4 = Poti links, 5 = Poti rechts
 
 ; -----------------------------------------------------------------------------
 ;   Schaltet den A/D-Wandler ein
 ;	keine Parameter
 ; -----------------------------------------------------------------------------
-initADC	
+initADC
 		bset OPTION, #%10000000
 		rts									;Ende
 		
@@ -35,12 +35,12 @@ startADC
 		staa ADCTL						;Wert an AD-Wandler uebergeben
 		
 Warte
-		ldaa ADCTL						;TODO: swi einbauen?
+		ldaa ADCTL
 		bpl Warte							;Endlosschleife, bis MSB gesetzt
 		
 		ldx #ADR1
 		ldaa 0,x							;1. Register laden
 		ldab 1,x							;2. Register laden
 		
-											;Ergebnisse in A und B
+												;Ergebnisse in A und B
 		rts									;Ende

@@ -8,10 +8,9 @@
 
 		switch VarSection
 ;Variablen
-row ds.b 1								;
-col ds.b 1								;
-column ds.b 1						;Anzahl Spalten
-page ds.b 1							;Anzahl Zeilen
+row 		ds.b 	1							;
+column	ds.b 	1							;Anzahl Spalten
+page 	ds.b 	1							;Anzahl Zeilen
 
 		switch RomSection
 ;Konstanten
@@ -26,78 +25,50 @@ LoeschLCD
 RepeatRows
 		staa row
 
-		ldaa #0							;wird an das Display uebertragen
-		ldab #128						;Initialisiere den Spaltenzaehler mit 128 
-											;->entspricht der maximalen Spaltenzahl des Displays
+		ldaa #0								;wird an das Display uebertragen
+		ldab #128							;Initialisiere den Spaltenzaehler mit 128 
+												;->entspricht der maximalen Spaltenzahl des Displays
 RepeatForRow
-		ldaa #0							;wird an das Display uebertragen
-		jsr LCDdata					;leeres Byte setzen				
-		decb								;setze die noch zu leerenden Spalten runter
-		bne RepeatForRow			;wiederhole, solange B nicht Null ist
-											;TODO: vielleicht muss man B auch speichern
+		ldaa #0								;wird an das Display uebertragen
+		jsr LCDdata						;leeres Byte setzen				
+		decb									;setze die noch zu leerenden Spalten runter
+		bne RepeatForRow				;wiederhole, solange B nicht Null ist
+												;TODO: vielleicht muss man B auch speichern,
+												;	 wenn LCDdata B zerstoert
 EndeRow
 		jsr nextRow
 		ldaa row
 		deca
 		bne RepeatRows
 		
-		rts								;Ende
+		rts									;Ende
 		
 ; -----------------------------------------------------------------------------
 ;  Springt im Display in die naechste Page (an dern Anfang der Zeile)
 ;	nutzt A
 ; -----------------------------------------------------------------------------
 nextRow	
-		ldaa #0							;Spalte auf 0 setzen
-		staa column
+		ldaa #0								;Spalte auf 0 setzen
+		staa column						;TODO: eigentlich nicht notwendig, da nur in der Variable gespeichert wird
 		jsr LCDcolumn
 
-		ldaa page						;Zeile einen weiter setzen, oder auf 0 springen,
-		inca								;	falls am Ende angekommen
+		ldaa page							;Zeile einen weiter setzen, oder auf 0 springen,
+		inca									;	falls am Ende angekommen
 		cmpa #8
-		bne EndeNextRow			;if page 8 then page = 0
+		bne EndeNextRow				;if page 8 then page = 0
 		
-		ldaa #0							;page zuruecksetzen
+		ldaa #0								;page zuruecksetzen
 		
-EndeNextRow
+		;TODO: hier eher:
+		;ldaa page
+		;inca
+		;anda #%00000111
+		
+EndeNextRow							;TODO: diese Zeile  auch nicht mehr nötig, wenn anderes klappt
 		staa page
 		jsr LCDpage
 		
-		rts								;Ende
-	
-;TODO: delete?
-getCharLCD
-		brclr scsr, #$20, *			; Wartet auf RDRF=1        
-		ldaa scdr          				; Zeichen lesen        
-		rts								;Ende
-
-; -----------------------------------------------------------------------------
-;	Gibt ein Zeichen auf dem Display aus.
-;	Das Zeichen wird an der Stelle ausgegeben,
-;		an welcher der Cursor im Display ist.
-;	A = Zeichen
-;	nutzt A,B,Y
-; -----------------------------------------------------------------------------
-putCharLCD
-		suba #$20					;Erstes Zeichen abziehen
-		ldab #8
-		mul								;Addition zu Adresse in D
-		
-		addd #chr_20				;Adresse der 8 Bytes in D
-		xgdy								;Adresse nun in D
-		
-		ldab 0,y						;Anzahl in B
-SchleifeBytes
-		iny
-		ldaa 0,y						;Zeichen-Byte in A laden
-		jsr LCDdata					;Zeichen-Byte uebertragen
-		decb
-		bne SchleifeBytes
-		
-		ldaa #0
-		jsr LCDdata					;leeres Byte setzen
-		
-		rts								;Ende
+		rts									;Ende
 		
 ; -----------------------------------------------------------------------------
 ;	Setzt den Page-Cursor des LCD-Displays auf den uebergebenen Wert
@@ -105,36 +76,36 @@ SchleifeBytes
 ;	nutzt A
 ; -----------------------------------------------------------------------------
 LCDpage
-		adda #%10110000		;Kommando hinzufuegen
+		adda #%10110000			;Kommando hinzufuegen
 		jsr LCDcommand
-		rts								;Ende
-		
+		rts									;Ende
+	
 ; -----------------------------------------------------------------------------
-;	Setzt den Page-Cursor des LCD-Displays auf den uebergebenen Wert
+;	Setzt den Spalten-Cursor des LCD-Displays auf den uebergebenen Wert
 ;	A = Wert -> erlaubte Werte sind 0 - 127
 ;	nutzt A
 ; -----------------------------------------------------------------------------
-LCDcolumn							;rol-befehle, um nicht nur auf Spalte 0 zu kommen
+LCDcolumn								
 		psha
 		anda #%11110000
 		lsra
 		lsra
 		lsra
 		lsra
-		adda #%00010000		;Kommando hinzufuegen
+		adda #%00010000			;Kommando hinzufuegen
 		jsr LCDcommand
 		pula
 		anda #%00001111
-		adda #%00000000		;Kommando hinzufuegen
+		adda #%00000000			;Kommando hinzufuegen
 		jsr LCDcommand
 		
-		rts								;Ende
+		rts									;Ende
 
 ; -----------------------------------------------------------------------------
 ;   Initialisierung des Displays
 ;	keine Parameter
 ; -----------------------------------------------------------------------------
-initLCD       
+initLCD
 		psha              
 		ldaa #$A2             
 		 bsr  LCDcommand              
@@ -154,7 +125,8 @@ initLCD
 		 bsr  LCDcommand              
 		 bclr PORTA,%01000000 	; PA6 = DIMM              
 		 pula   								; Hintergrundbeleuchtung an              
-		 rts
+		 rts									;Ende
+
 ; -----------------------------------------------------------------------------
 *       SPI-Unterprogramme
 ; -----------------------------------------------------------------------------
@@ -167,21 +139,25 @@ initSPI
 		ldaa #%01010010     		; 125kHz,Mode=0          
 		staa SPCR     					; enable,no int          
 		pula          
-		rts
-		
+		rts									;Ende
+
+; -----------------------------------------------------------------------------
+;	Uebertraegt Bytes an das LCD-Display
+;	nutz A
+; -----------------------------------------------------------------------------
 SPItransfer   
 		staa  SPDR         				; Byte senden 
 SPIwait2      
 		tst   SPSR        					; Warten mal anders              
 		bpl   SPIwait2 					; auf MSB = SPIF = 1              
 		ldaa  SPDR         				; Antwortbyte holen              
-		rts
+		rts									;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Sendet ein Kommandobyte aus A an das Display
 ;	nutzt A
 ; -----------------------------------------------------------------------------
-LCDcommand    
+LCDcommand
 		bclr  PORTD,%00100000 	; PD5, LCD_A0=0              
 		bra LCDsend 
 		
@@ -208,5 +184,5 @@ LCDsend
 		stab  PIO_C
 		      
 		pulb              
-		rts
+		rts									;Ende
 

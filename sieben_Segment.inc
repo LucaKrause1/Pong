@@ -6,45 +6,56 @@
 ;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
 
-     
 		switch VarSection
 ;Variablen
-PointsA ds.w 1									;Punkte des ersten Spielers
-PointsB ds.w 1									;Punkte des zweiten Spielers
-PointsAasString ds.b 4							;Punkte des ersten Spielers
-PointsBasString ds.b 4							;Punkte des zweiten Spielers
-segment ds.b 1									;welches Segment als naechstes gezeigt wird
+PointsA 			ds.w	1							;Punkte des ersten Spielers
+PointsB 			ds.w 1							;Punkte des zweiten Spielers
+PointsAasString 	ds.b 	4							;Punkte des ersten Spielers
+PointsBasString 	ds.b 	4							;Punkte des zweiten Spielers
+segment 			ds.b 	1							;welches Segment als naechstes gezeigt wird
 
 		switch RomSection
 ;Konstanten
-									;Hexadezimale Darstellung der Zahlen
-Numbers	dc.b				$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
-									;Bit-Darstellung der Zahlen
-									;$#00111111,$#00000110,$#01011011,
-									;$#01001111,$#01100110,$#01101101,
-									;$#01111101,$#00000111,$#01111111,
-									;$#01101111
+											;Hexadezimale Darstellung der Zahlen
+Numbers			dc.b				$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
+											;Bit-Darstellung der Zahlen
+											;$#00111111,$#00000110,$#01011011,
+											;$#01001111,$#01100110,$#01101101,
+											;$#01111101,$#00000111,$#01111111,
+											;$#01101111
 
 ; -----------------------------------------------------------------------------
 ;	wandelt die Punkte der Spieler in Strings um 
 ;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
 pointsToString
+			psha
+			pshb
+			pshy
+			
 			ldd PointsA
 			ldy #PointsAasString
-			jsr Umwandlung16BitWert
+			jsr Conversion16BitValue
 						
 			ldd PointsB
 			ldy #PointsBasString
-			jsr Umwandlung16BitWert
+			jsr Conversion16BitValue
 			
-			rts										;Ende
+			puly
+			pulb
+			pula
+			rts											;Ende
 			
 ; -----------------------------------------------------------------------------
 ;	wandelt die Punkte der Spieler aus Dezimal in 7-Segment-Zahlen um
 ;	nutzt A,B,X,Y
 ; -----------------------------------------------------------------------------
 pointsToSegments
+			psha
+			pshb
+			pshx
+			pshy
+			
 			ldaa #8
 			ldx #PointsAasString
 			
@@ -59,7 +70,11 @@ pointsToSegmentsLoop
 			deca
 			bne pointsToSegmentsLoop
 			
-			rts										;Ende
+			puly
+			pulx
+			pulb
+			pula
+			rts											;Ende
 			
 
 ; -----------------------------------------------------------------------------
@@ -67,11 +82,14 @@ pointsToSegmentsLoop
 ;	nutzt A
 ; -----------------------------------------------------------------------------
 initSegments
+			psha
+			
 			ldaa PORTA
 			anda #%10111111
 			staa PORTA
 			
-			rts				;Ende
+			pula
+			rts											;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Timer fuer die 7-Segment-Anzeige
@@ -84,7 +102,7 @@ initSegmentTimer
 			staa TMSK1
 			       
 			pula          
-			rts				;Ende
+			rts											;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
@@ -95,25 +113,25 @@ initSegmentTimer
 isrOC1			
 			ldy #PointsAasString
 			ldab segment
-			aby									;Segment-Index raufaddieren
+			aby											;Segment-Index raufaddieren
 			
 			ldaa 0,y
 			
 			staa PIO_A					
-			stab PIO_C							;0 = links, 7 = rechts
+			stab PIO_C								;0 = links, 7 = rechts
 			
-			ldab segment						;Segment weiterstellen
+			ldab segment								;Segment weiterstellen
 			incb
-			andb #%00000111						;nur die letzen 3 Bit sind interessant
+			andb #%00000111					;nur die letzen 3 Bit sind interessant
 			stab segment
 			
-												;Timer einstellen
-			ldd TOC1							;Frequenz einstellen
-			addd #2000							;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
-														;-> nach 1000 us wieder interrupten
+															;Timer einstellen
+			ldd TOC1									;Frequenz einstellen
+			addd #2000								;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
+															;-> nach 1000 us wieder interrupten
 			std TOC1
 			
 			;Flag zuruecksetzen
 			bset TFLG1,  #%10000000	
 			
-			rti				;Ende Interrupt
+			rti												;Ende Interrupt

@@ -7,13 +7,13 @@
 
 		switch VarSection
 ;Variablen
-UmwandlungWert16 ds.b 2				;Zwischengespeicherter Wert der Umwandlung
-counter16Umwandlung ds.b 1			;Zaehler, wie oft der Rest geholt werden soll
-vierstellenUmwandlung ds.w 1			;max. 4 Stellen ausgeben
+conversion16Bit		 			ds.b 	2			;Zwischengespeicherter Wert der Umwandlung
+counter16conversion			ds.b 	1			;Zaehler, wie oft der Rest geholt werden soll
+fourSegmentConversion		ds.w 1			;max. 4 Stellen ausgeben
 
 		switch RomSection
 ;Konstanten
-anzahlUmwandlung dc.b 4
+countConversion	 			dc.b 	4
 
 ; -----------------------------------------------------------------------------
 ;  Wandelt den uebergebenen Wert in Dezimalschreibweise als String
@@ -21,24 +21,24 @@ anzahlUmwandlung dc.b 4
 ;	Y = Speicherort String
 ;	nutzt D,X,Y
 ; -----------------------------------------------------------------------------
-Umwandlung16BitWert
+Conversion16BitValue
 		pshx
 		pshy
 		psha
 		pshb
 		
-		std UmwandlungWert16
-		sty vierstellenUmwandlung
+		std conversion16Bit
+		sty fourSegmentConversion
 		
-		ldab anzahlUmwandlung			;Am Ende des Strings anfangen
+		ldab countConversion				;Am Ende des Strings anfangen
 		aby										
 		
-		ldaa anzahlUmwandlung			;anzahlAusgabe Zeichen ausgeben
-		staa counter16Umwandlung
+		ldaa countConversion				;anzahlAusgabe Zeichen ausgeben
+		staa counter16conversion
 		
-		ldd UmwandlungWert16
-																																										;TODO: fertig???
-DivUmwandlung
+		ldd conversion16Bit
+													;TODO: fertig???
+DivConversion
 		dey										;y heruntersetzen
 		
 		ldx #10
@@ -46,11 +46,11 @@ DivUmwandlung
 		
 		stab 0,y
 		
-		dec counter16Umwandlung		;Counter dekrementieren
+		dec counter16conversion		;Counter dekrementieren
 		xgdx										;Div-Ergebnis holen
-		bne DivUmwandlung
+		bne DivConversion
 		
-EndeStringUmwandlung
+EndStringConversion
 		pulb
 		pula
 		puly
