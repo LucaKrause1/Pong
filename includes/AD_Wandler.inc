@@ -10,7 +10,7 @@
 
 		switch RomSection
 ;Konstanten
-kanal dc.b 4 ;4 = Poti links, 5 = Poti rechts
+kanal 	dc.b 	4 								;4 = Poti links, 5 = Poti rechts
 
 ; -----------------------------------------------------------------------------
 ;   Schaltet den A/D-Wandler ein

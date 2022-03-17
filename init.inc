@@ -4,7 +4,6 @@
 ; 	Author: 			Luca Manuel Krause
 ;	Datum:				18.01.2022
 ; -----------------------------------------------------------------------------
-
      
 		switch VarSection
 ;Variablen
@@ -14,17 +13,18 @@
 
 ; -----------------------------------------------------------------------------
 ;   Initialisiert alle Variablen mit einer Nullen vor jedem Spielstart
+;	nutzt A,X
 ; -----------------------------------------------------------------------------
 delete
-			ldx #dummy						;Adresse der ersten Variable
+			ldx #dummy					;Adresse der ersten Variable
 			ldaa #0
 deleteLoop
-			staa 0,x							;loeschen
+			staa 0,x						;loeschen
 			inx
-			cpx #varEnd						; alle erwischt?
-			bne deleteLoop					; sonst weiter
+			cpx #varEnd					;alle erwischt?
+			bne deleteLoop				;sonst weiter
 		
-			rts									;Ende
+			rts								;Ende
 
 ; -----------------------------------------------------------------------------
 ;   Initialisiert alle nötigen Schnittstellen und Punkte vor dem Spiel
@@ -42,8 +42,8 @@ initAll
 			
 			;Punkte
 			ldd #0							;Start-Punkte
-			std PunkteA
-			std PunkteB	
+			std PointsA
+			std PointsB	
 			jsr pointsToString
 			jsr pointsToSegments
 			jsr initSegments			;7-Segment Anzeigen

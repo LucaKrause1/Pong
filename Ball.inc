@@ -6,25 +6,25 @@
 ; -----------------------------------------------------------------------------     
 		switch VarSection
 ;Variablen
-BallX			ds.b 	1								;Ballposition in X-Richtung
-BallY			ds.b	1								;Ballposition in Y-Richtung
-moveX		ds.b 	1								;Ballaenderung in X-Richtung
-moveY		ds.b	1								;Ballaenderung in Y-Richtung
-speed 		ds.w	1								;Geschwindigkeit des Balls, 
+BallX							ds.b 	1				;Ballposition in X-Richtung
+BallY							ds.b	1				;Ballposition in Y-Richtung
+moveX						ds.b 	1				;Ballaenderung in X-Richtung
+moveY						ds.b	1				;Ballaenderung in Y-Richtung
+speed 						ds.w	1				;Geschwindigkeit des Balls, 
 														;je kleiner, desto schneller
 														;realisiert als Einheit 
 														;fuer den Timer des Balls
-timerSeconds	ds.b 1							;wird runtergezaehlt, 
+timerSeconds				ds.b 1				;wird runtergezaehlt, 
 														;damit der Ball laenger sichtbar ist
 
 		switch RomSection
 ;Konstanten
-StartGeschwindigkeit 	dc.w 65000
-maxGeschwindigkeit 	dc.w	20000
+StartSpeed					dc.w	65000
+maxSpeed 					dc.w	20000
 startX 						dc.b	64
-starty 						dc.b	32
-startXMove				dc.b	1
-startYMove				dc.b	1
+startY 						dc.b	32
+startXMove					dc.b	1
+startYMove					dc.b	1
 lastX							dc.b	127
 lastY							dc.b	63
 timerSecondsReset		dc.b 	2				;Grundschnelligkeit in Zyklen des Balls,
@@ -40,7 +40,7 @@ initBall
 			pshb
 			
 			ldaa startX
-			ldab starty
+			ldab startY
 			staa BallX
 			stab BallY
 			
@@ -49,7 +49,7 @@ initBall
 			staa moveX
 			stab moveY
 			
-			ldaa StartGeschwindigkeit
+			ldaa StartSpeed
 			staa speed
 			
 			ldaa BallX
@@ -70,14 +70,14 @@ initBallTimer
 			pshb
 			
 			ldd TOC2
-			addd StartGeschwindigkeit		;Timer einstellen
+			addd StartSpeed						;Timer einstellen
 			std TOC2
 			
 			bset TMSK1, #%01000000  
 			
 			pulb
 			pula
-			rts										;Ende
+			rts											;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
@@ -107,7 +107,7 @@ LoadingBall
 			
 NotReloadingBall
 			ldd speed								;Geschwindigkeit des Balls erhoehen
-			cmpa maxGeschwindigkeit
+			cmpa maxSpeed
 			bmi NoSpeedCorrection
 			subd #10
 			std speed
@@ -126,7 +126,7 @@ NoSpeedCorrection
 			
 ; -----------------------------------------------------------------------------
 ;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
-;	nutzt A,B,
+;	nutzt A,B
 ; -----------------------------------------------------------------------------
 moveBall
 			;Bewegen
@@ -159,11 +159,11 @@ DidntHitUpperBorder
 
 DidntHitLowerBorder
 
-XUeberpruefung
+XTest
 			ldaa bat1X
 			inca
 			cmpa BallX
-			beq Left								;Ist der Ball vor der Zeile des linken Schlaegers?
+			beq Left									;Ist der Ball vor der Zeile des linken Schlaegers?
 NotLeft		
 			ldaa bat2X
 			deca
@@ -174,9 +174,9 @@ NotRight
 Left
 			ldaa BallY
 			cmpa BatPos1
-			blo MovingPunkteB
+			blo MovingPointsB
 			cmpa BatPos1End
-			bhi MovingPunkteB
+			bhi MovingPointsB
 			
 			ldaa #1
 			staa moveX
@@ -184,26 +184,26 @@ Left
 Right
 			ldaa BallY
 			cmpa BatPos2
-			blo MovingPunkteA
+			blo MovingPointsA
 			cmpa BatPos2End
-			bhi MovingPunkteA
+			bhi MovingPointsA
 			
 			ldaa #-1
 			staa moveX
 			bra EndMove
 			
-MovingPunkteA
-			ldd PunkteA
+MovingPointsA
+			ldd PointsA
 			addd #1
-			std PunkteA
-			bra startingNewGame
-MovingPunkteB
-			ldd PunkteB
+			std PointsA
+			bra PlayerGotPoints
+MovingPointsB
+			ldd PointsB
 			addd #1
-			std PunkteB
-			bra startingNewGame
+			std PointsB
+			bra PlayerGotPoints
 			
-startingNewGame
+PlayerGotPoints
 			jsr pointsToString
 			jsr PointsToSegments
 			
@@ -213,7 +213,7 @@ startingNewGame
 			jsr initBall
 			
 EndMove			
-			rts										;Ende
+			rts											;Ende
 
 
 

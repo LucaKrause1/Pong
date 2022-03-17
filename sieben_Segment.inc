@@ -9,10 +9,10 @@
      
 		switch VarSection
 ;Variablen
-PunkteA ds.w 1									;Punkte des ersten Spielers
-PunkteB ds.w 1									;Punkte des zweiten Spielers
-PunkteAasString ds.b 4							;Punkte des ersten Spielers
-PunkteBasString ds.b 4							;Punkte des zweiten Spielers
+PointsA ds.w 1									;Punkte des ersten Spielers
+PointsB ds.w 1									;Punkte des zweiten Spielers
+PointsAasString ds.b 4							;Punkte des ersten Spielers
+PointsBasString ds.b 4							;Punkte des zweiten Spielers
 segment ds.b 1									;welches Segment als naechstes gezeigt wird
 
 		switch RomSection
@@ -30,12 +30,12 @@ Numbers	dc.b				$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
 ;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
 pointsToString
-			ldd PunkteA
-			ldy #PunkteAasString
+			ldd PointsA
+			ldy #PointsAasString
 			jsr Umwandlung16BitWert
 						
-			ldd PunkteB
-			ldy #PunkteBasString
+			ldd PointsB
+			ldy #PointsBasString
 			jsr Umwandlung16BitWert
 			
 			rts										;Ende
@@ -46,7 +46,7 @@ pointsToString
 ; -----------------------------------------------------------------------------
 pointsToSegments
 			ldaa #8
-			ldx #PunkteAasString
+			ldx #PointsAasString
 			
 pointsToSegmentsLoop
 			ldab 0,x
@@ -93,7 +93,7 @@ initSegmentTimer
 ;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
 isrOC1			
-			ldy #PunkteAasString
+			ldy #PointsAasString
 			ldab segment
 			aby									;Segment-Index raufaddieren
 			
