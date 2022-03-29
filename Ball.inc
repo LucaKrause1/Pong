@@ -216,6 +216,8 @@ PlayerGotPoints
 			jsr initBall
 			
 EndMove
+
+			;TODO: hinzufuegen, dass der Ball an den Raendern des Schlaegers anders abprallt?
 			pulb
 			pula
 			rts											;Ende

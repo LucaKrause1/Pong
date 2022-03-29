@@ -59,6 +59,9 @@ initAll
 			jsr initSegments			;7-Segment Anzeigen
 			jsr initSegmentTimer
 			
+			jsr initBall						;TODO: hier reingezogen. Funktioniert es denn noch?
+			jsr initBallTimer
+			
 			cli
 			
 			pulb

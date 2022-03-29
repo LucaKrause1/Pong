@@ -39,9 +39,6 @@ Start
 			
 			jsr initAll
 			
-			jsr initBall
-			jsr initBallTimer
-			
 ; -----------------------------------------------------------------------------	
 ;   Endlosspielschleife, solange nicht die Taste "0" gedrueckt wird
 ; -----------------------------------------------------------------------------
@@ -72,6 +69,8 @@ Play
 Reset
 			sei									;Interrupts unterbinden, da keine Ballbewegung mehr erlaubt ist 
 													;und die Anzeige nicht veraendert werden soll
+													;TODO: warum noetig? Das Display wird doch sowieso zurueckgesetzt
+													;Interruptsperre sowieso nötig!!!
 			ldaa BallX
 			ldab BallY
 			jsr deleteBall
