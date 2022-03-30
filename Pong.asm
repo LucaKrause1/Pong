@@ -53,6 +53,9 @@ Play
 			
 			jsr setBats
 			
+			jsr reloadBall		
+				
+			
 			;Tastenueberpruefung
 			ldaa PIO_B
 			anda #%00000001			;Spiel zuruecksetzen, falls Taste "0" gedrueckt	
@@ -98,7 +101,7 @@ Reset
 ;   Vektortabelle
 ; -----------------------------------------------------------------------------
 
-Error		bra	*								; hier waere Fehlerbehandlung sinnvoll
+Error		bra	*								; hier waere Fehlerbehandlung sinnvollF
 
 ;*** Vektoren ***
 Vector		section
@@ -112,7 +115,7 @@ VecTOF				dc.w Error				; $FFDE Timer Overflow
 VecTOC5			dc.w Error				; $FFE0 Timer Output Compare 5
 VecTOC4			dc.w Error				; $FFE2 Timer Output Compare 4
 VecTOC3			dc.w Error				; $FFE4 Timer Output Compare 3
-VecTOC2			dc.w isrOC2			; $FFE6 Timer Output Compare 2
+VecTOC2			dc.w Error			; $FFE6 Timer Output Compare 2
 VecTOC1			dc.w isrOC1			; $FFE8 Timer Output Compare 1
 VecTIC3			dc.w Error				; $FFEA Timer Input Capture 3
 VecTIC2			dc.w Error				; $FFEC Timer Input Capture 2

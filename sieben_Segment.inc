@@ -9,7 +9,7 @@
 		switch VarSection
 ;Variablen
 PointsA 			ds.w	1							;Punkte des ersten Spielers
-PointsB 			ds.w 1							;Punkte des zweiten Spielers
+PointsB 			ds.w 	1							;Punkte des zweiten Spielers
 PointsAasString 	ds.b 	4							;Punkte des ersten Spielers
 PointsBasString 	ds.b 	4							;Punkte des zweiten Spielers
 segment 			ds.b 	1							;welches Segment als naechstes gezeigt wird
@@ -111,23 +111,25 @@ initSegmentTimer
 ;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
 isrOC1		
-			ldy #PointsAasString
-			ldab segment
-			aby											;Segment-Index raufaddieren
-			
-			ldaa 0,y
-			
-			staa PIO_A					
-			stab PIO_C								;0 = links, 7 = rechts
-			
 			ldab segment								;Segment weiterstellen
 			incb
 			andb #%00000111					;nur die letzen 3 Bit sind interessant
 			stab segment
 			
+			ldy #PointsAasString
+			aby											;Segment-Index raufaddieren
+			
+			ldaa 0,y
+			
+			stab PIO_C								;0 = links, 7 = rechts
+			staa PIO_A
+			
+			ldd BallTimer					;Timer fuer den Ball weitersetzen
+			addd #1
+			std BallTimer
 															;Timer einstellen
 			ldd TOC1									;Frequenz einstellen
-			addd #3000								;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
+			addd #2000								;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
 															;-> nach 1000 us wieder interrupten
 			std TOC1
 			

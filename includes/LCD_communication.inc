@@ -171,13 +171,17 @@ LCDdata
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 LCDsend
-		pshb              
+		pshb           
+		
+		sei   					;Interrupts unterbinden, da sonst die 
+								;7-Segment-Anzeige PIO_C ueberschreibt
 		ldab  PIO_C              
-		andb  #%00111111   		; SPI_SEL = 0 = LCD              
+		andb  #%00111111   		; SPI_SEL = 0 = LCD          
 		stab  PIO_C              
 		jsr   SPItransfer              
 		orab  #%11000000  			; SPI_SEL = 3 = EEPROM              
 		stab  PIO_C
+		cli
 		      
 		pulb              
 		rts									;Ende

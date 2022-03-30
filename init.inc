@@ -43,7 +43,7 @@ initAll
 
 			jsr initSPI 					;SPI-Schnittstelle
 			
-			jsr initLCD 					;LCD-Display
+			jsr initLCD 					;LCD-Display ;TODO
 			jsr LoeschLCD
 											
 											;Potis
@@ -59,7 +59,7 @@ initAll
 			jsr initSegmentTimer
 			
 			jsr initBall
-			jsr initBallTimer
+			;jsr initBallTimer
 			
 			cli
 			

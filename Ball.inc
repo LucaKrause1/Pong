@@ -16,6 +16,7 @@ speed 						ds.w	1				;Geschwindigkeit des Balls,
 														;fuer den Timer des Balls
 timerSeconds				ds.b 1				;wird runtergezaehlt, 
 														;damit der Ball laenger sichtbar ist
+BallTimer 					ds.w 	1			;Anzahl an 7-Segment-Interrupts fuer die Ball-Bewegung
 
 		switch RomSection
 ;Konstanten
@@ -49,12 +50,6 @@ initBall
 			ldab startYMove
 			staa moveX
 			stab moveY
-			
-			ldaa StartSpeed
-			staa speed
-			
-			ldaa timerSecondsReset
-			staa timerSeconds
 			
 			ldaa BallX
 			ldab BallY
@@ -92,23 +87,6 @@ initBallTimer
 ;	keine Parameter, da es sich um eine Interrupt Service Routine handelt.
 ; -----------------------------------------------------------------------------
 isrOC2			
-			dec timerSeconds					;Soll der Ball schon neu gesetzt werden?
-			bne NotReloadingBall
-			
-LoadingBall
-			ldaa BallX
-			ldab BallY
-			jsr deleteBall
-			
-			jsr moveBall
-			
-			ldaa BallX
-			ldab BallY
-			jsr loadBall
-			
-			ldaa timerSecondsReset
-			staa timerSeconds
-			
 NotReloadingBall
 			ldd speed								;Geschwindigkeit des Balls erhoehen
 			cmpa maxSpeed
@@ -128,6 +106,36 @@ NoSpeedCorrection
 			
 			rti											;Ende Interrupt
 			
+			
+			
+			
+			
+			
+
+			
+			
+			
+reloadBall
+			ldd BallTimer
+			cmpd #80
+			blo LoadingBallEnd
+			ldd #0
+			std BallTimer
+			
+LoadingBall
+			ldaa BallX
+			ldab BallY
+			jsr deleteBall
+			
+			jsr moveBall
+			
+			ldaa BallX
+			ldab BallY
+			jsr loadBall
+			
+LoadingBallEnd
+			rts											;Ende
+			
 ; -----------------------------------------------------------------------------
 ;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
 ;	nutzt A,B
@@ -138,7 +146,6 @@ moveBall
 
 ;Erst ueberpruefen, dann bewegen!
 ;ueberpruefen
-			
 			;obere Display-Grenze
 			ldaa BallY
 			cmpa #0
@@ -216,7 +223,6 @@ PlayerGotPoints
 			bra EndOfMoving
 			
 EndMove
-;bewegen
 			;Bewegen
 			ldaa BallX
 			adda moveX

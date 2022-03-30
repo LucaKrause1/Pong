@@ -118,14 +118,14 @@ loadBallLoop
 loadBallEnd
 		staa dataByteLCD
 		
-		cli
+		;cli
 		ldaa x_pos
 		jsr LCDcolumn
 		ldaa pageNow
 		jsr LCDpage
 		ldaa dataByteLCD
 		jsr LCDdata
-		sei
+		;sei
 		
 		rts										;Ende
 
