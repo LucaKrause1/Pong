@@ -117,7 +117,7 @@ NoSpeedCorrection
 			
 reloadBall
 			ldd BallTimer
-			cmpd #80
+			cmpd #70
 			blo LoadingBallEnd
 			ldd #0
 			std BallTimer
