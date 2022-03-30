@@ -135,15 +135,9 @@ NoSpeedCorrection
 moveBall
 			psha
 			pshb
-			
-			;Bewegen
-			ldaa BallX
-			adda moveX
-			staa BallX
-			
-			ldaa BallY
-			adda moveY
-			staa BallY
+
+;Erst ueberpruefen, dann bewegen!
+;ueberpruefen
 			
 			;obere Display-Grenze
 			ldaa BallY
@@ -219,8 +213,20 @@ PlayerGotPoints
 			jsr deleteBall
 			jsr initBall
 			
+			bra EndOfMoving
+			
 EndMove
-
+;bewegen
+			;Bewegen
+			ldaa BallX
+			adda moveX
+			staa BallX
+			
+			ldaa BallY
+			adda moveY
+			staa BallY
+			
+EndOfMoving
 			;TODO: hinzufuegen, dass der Ball an den Raendern des Schlaegers anders abprallt?
 			pulb
 			pula
