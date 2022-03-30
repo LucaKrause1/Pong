@@ -12,7 +12,12 @@ PointsA 			ds.w	1							;Punkte des ersten Spielers
 PointsB 			ds.w 	1							;Punkte des zweiten Spielers
 PointsAasString 	ds.b 	4							;Punkte des ersten Spielers
 PointsBasString 	ds.b 	4							;Punkte des zweiten Spielers
+PointsAForSegment 	ds.b	4							;Punkte fuer das Segment des ersten Spielers
+														;muss sich hinter PointsAasString befinden
+PointsBForSegment 	ds.b	4							;Punkte fuer das Segment des zweiten Spielers
+
 segment 			ds.b 	1							;welches Segment als naechstes gezeigt wird
+
 
 		switch RomSection
 ;Konstanten
@@ -64,7 +69,8 @@ pointsToSegmentsLoop
 			ldy #Numbers
 			aby
 			ldab 0,y
-			stab 0,x
+			stab 8,x									;8, weil die PointsAForSegments 8 
+														;Byte hinter PointsAasString sind
 			
 			inx
 			deca
@@ -116,7 +122,7 @@ isrOC1
 			andb #%00000111					;nur die letzen 3 Bit sind interessant
 			stab segment
 			
-			ldy #PointsAasString
+			ldy #PointsAForSegment
 			aby											;Segment-Index raufaddieren
 			
 			ldaa 0,y
