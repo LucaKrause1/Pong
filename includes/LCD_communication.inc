@@ -8,9 +8,8 @@
 
 		switch VarSection
 ;Variablen
-row 		ds.b 	1							;
-column	ds.b 	1							;Anzahl Spalten
-page 	ds.b 	1							;Anzahl Zeilen
+row 		ds.b 	1							;Fuer das Loschen des LCD-Displays
+page 	ds.b 	1							;In welcher Zeile sind wir?
 
 		switch RomSection
 ;Konstanten
@@ -36,8 +35,7 @@ RepeatForRow
 		jsr LCDdata						;leeres Byte setzen				
 		decb									;setze die noch zu leerenden Spalten runter
 		bne RepeatForRow				;wiederhole, solange B nicht Null ist
-												;TODO: vielleicht muss man B auch speichern,
-												;	 wenn LCDdata B zerstoert
+												
 EndeRow
 		jsr nextRow
 		ldaa row
@@ -56,24 +54,14 @@ nextRow
 		psha
 		
 		ldaa #0								;Spalte auf 0 setzen
-		staa column						;TODO: eigentlich nicht notwendig, da nur in der Variable gespeichert wird
 		jsr LCDcolumn
 
 		ldaa page							;Zeile einen weiter setzen, oder auf 0 springen,
 		inca									;	falls am Ende angekommen
-		cmpa #8
-		bne EndeNextRow				;if page 8 then page = 0
+		anda #%00000111
 		
-		ldaa #0								;page zuruecksetzen
-		
-		;TODO: hier eher:
-		;ldaa page
-		;inca
-		;anda #%00000111
-		
-EndeNextRow							;TODO: diese Zeile  auch nicht mehr nötig, wenn anderes klappt
 		staa page
-		jsr LCDpage
+		jsr LCDpage						;page uebertragen
 		
 		pula
 		rts									;Ende
@@ -167,7 +155,7 @@ SPIwait2
 ; -----------------------------------------------------------------------------
 LCDcommand
 		bclr  PORTD,%00100000 	; PD5, LCD_A0=0              
-		bra LCDsend 
+		bra LCDsend
 		
 ; -----------------------------------------------------------------------------
 ;	Sendet ein Datenbyte aus A an das Display

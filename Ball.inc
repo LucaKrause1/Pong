@@ -27,8 +27,9 @@ startXMove				dc.b	1
 startYMove				dc.b	1
 lastX							dc.b	127
 lastY							dc.b	63
-timerSecondsReset		dc.b 	2				;Grundschnelligkeit in Zyklen des Balls,
+timerSecondsReset		dc.b 	1				;Grundschnelligkeit in Zyklen des Balls,
 														; um die 2-Byte der Timer-Grenze zu umgehen.
+														;TODO: auf 2 setzen
 
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Ball fuer jedes Spiel
@@ -51,6 +52,9 @@ initBall
 			
 			ldaa StartSpeed
 			staa speed
+			
+			ldaa timerSecondsReset
+			staa timerSeconds
 			
 			ldaa BallX
 			ldab BallY
@@ -87,7 +91,7 @@ initBallTimer
 ;	nutzt A,B
 ;	keine Parameter, da es sich um eine Interrupt Service Routine handelt.
 ; -----------------------------------------------------------------------------
-isrOC2
+isrOC2			
 			dec timerSeconds					;Soll der Ball schon neu gesetzt werden?
 			bne NotReloadingBall
 			
@@ -166,12 +170,12 @@ XTest
 			ldaa bat1X
 			inca
 			cmpa BallX
-			beq Left								;Ist der Ball vor der Zeile des linken Schlaegers?
+			beq Left								;Ist der Ball vor der Spalte des linken Schlaegers?
 NotLeft		
 			ldaa bat2X
 			deca
 			cmpa BallX
-			beq Right								;Ist der Ball vor der Zeile des rechten Schlaegers?
+			beq Right								;Ist der Ball vor der Spalte des rechten Schlaegers?
 NotRight
 			bra EndMove
 Left

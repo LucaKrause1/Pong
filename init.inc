@@ -19,21 +19,20 @@ delete
 			psha
 			pshx
 			
-			
-			ldx #dummy					;Adresse der ersten Variable
+			ldx #dummy						;Adresse der ersten Variable
 			ldaa #0
 deleteLoop
 			staa 0,x						;loeschen
 			inx
-			cpx #varEnd					;alle erwischt?
-			bne deleteLoop				;sonst weiter
+			cpx #varEnd						;alle erwischt?
+			bne deleteLoop					;sonst weiter
 			
 			pulx
 			pula
 			rts								;Ende
 
 ; -----------------------------------------------------------------------------
-;   Initialisiert alle nötigen Schnittstellen und Punkte vor dem Spiel
+;   Initialisiert alle nötigen Schnittstellen und Variablen vor dem Spiel
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 initAll
@@ -47,8 +46,8 @@ initAll
 			jsr initLCD 					;LCD-Display
 			jsr LoeschLCD
 											
-												;Potis
-			jsr initADC					;AD-Wandler
+											;Potis
+			jsr initADC						;AD-Wandler
 			
 			;Punkte
 			ldd #0							;Start-Punkte
@@ -56,10 +55,10 @@ initAll
 			std PointsB	
 			jsr pointsToString
 			jsr pointsToSegments
-			jsr initSegments			;7-Segment Anzeigen
+			jsr initSegments				;7-Segment Anzeigen
 			jsr initSegmentTimer
 			
-			jsr initBall						;TODO: hier reingezogen. Funktioniert es denn noch?
+			jsr initBall
 			jsr initBallTimer
 			
 			cli

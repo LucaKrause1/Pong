@@ -57,7 +57,7 @@ Play
 			ldaa PIO_B
 			anda #%00000001			;Spiel zuruecksetzen, falls Taste "0" gedrueckt	
 			
-			beq Reset						
+			beq Reset					
 
 			bra Play
 			
@@ -68,9 +68,7 @@ Play
 ; -----------------------------------------------------------------------------
 Reset
 			sei									;Interrupts unterbinden, da keine Ballbewegung mehr erlaubt ist 
-													;und die Anzeige nicht veraendert werden soll
-													;TODO: warum noetig? Das Display wird doch sowieso zurueckgesetzt
-													;Interruptsperre sowieso nötig!!!
+													
 			ldaa BallX
 			ldab BallY
 			jsr deleteBall
@@ -90,11 +88,11 @@ Reset
 					
 			include includes\LCDfont.inc		
 			include includes\LCD_communication.inc
-			
 			include includes\AD_Wandler.inc
+			include includes\DezimaleUmwandlung.inc
+			
 			include includes\loeschvariable.inc
 			
-			include includes\DezimaleUmwandlung.inc
 			
 ; -----------------------------------------------------------------------------
 ;   Vektortabelle

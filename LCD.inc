@@ -246,21 +246,16 @@ setBats
 setBatLCD
 		pshb
 		pshx
-		staa batX
-		
-		sei										;TODO: Interrupts unterbinden
-		;TODO: Page nur einmal uebertragen, aber Interrupts definitiv unterbinden
-		;TODO: dafuer Command 13 uebertragen?
-		;in der init-Subroutine dafuer den Command 12?
-		;spart an dieser Stelle 7-mal das Uebertragen der Spalte
+		staa batX				
 		
 		ldaa #0									;erste Page zuerst ansprechen
 		staa LCDcurrentPage
 		
 		ldab #8									;Schleifendurchlaeufe, da 8 Zeilen
 setBatLCDLoop
+		;sei											;TODO: Interrupts unterbinden
 		ldaa batX								;Spalte einstellen
-		jsr LCDcolumn						;TODO: rausziehen, wenn mit Command 13 moeglich
+		jsr LCDcolumn						
 		
 		ldaa LCDcurrentPage				;Zeile einstellen
 		jsr LCDpage
@@ -272,11 +267,10 @@ setBatLCDLoop
 		ldaa 0,x								;Daten veroeffentlichen
 		inx
 		jsr LCDdata
+		;cli											;TODO: Interrupts erlauben
 		
 		decb										;Gehoert die naechste Zeile noch zum Spielfeld?
 		bne setBatLCDLoop
-		
-		cli										;TODO: Interrupts erlauben
 		
 		pulx
 		pulb
