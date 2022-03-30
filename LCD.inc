@@ -65,43 +65,15 @@ deleteBall
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 loadBall
-		stab y_pos
-		;sei
-		jsr LCDcolumn
-		
-		ldaa y_pos
-		lsra										;Page herausfinden
-		lsra
-		lsra
-		jsr LCDpage
-		
-		ldab y_pos
-		andb #%00000111				;Divisionsrest /8 fuer das Bit in der Page
-		incb
-		
-		ldaa #1
-loadBallLoop
-		decb
-		beq loadBallEnd
-		
-		lsla
-		bra loadBallLoop
-		
-loadBallEnd
-		;Daten in A
-		jsr LCDdata
-		;cli
-		
-		;TODO: Interruptsperre einbauen, um immer in der richtigen Position zu sein
-		;TODO: alle Werte erst speichern und gemeinsam uebertragen
-		;TODO: am Ende uebertragen
-;		;TODO: Fall mit Interruptsperre:
-		;staa x_pos
 		;stab y_pos
-		;lsrb										;Page herausfinden
-		;lsrb
-		;lsrb
-		;stab pageNow
+		;;sei
+		;jsr LCDcolumn
+		
+		;ldaa y_pos
+		;lsra										;Page herausfinden
+		;lsra
+		;lsra
+		;jsr LCDpage
 		
 		;ldab y_pos
 		;andb #%00000111				;Divisionsrest /8 fuer das Bit in der Page
@@ -116,16 +88,44 @@ loadBallEnd
 		;bra loadBallLoop
 		
 ;loadBallEnd
-		;staa dataByteLCD
-		
-		;cli
-		;ldaa x_pos
-		;jsr LCDcolumn
-		;ldaa pageNow
-		;jsr LCDpage
-		;ldaa dataByteLCD
+		;;Daten in A
 		;jsr LCDdata
-		;sei
+		;cli
+		
+		;TODO: Interruptsperre einbauen, um immer in der richtigen Position zu sein
+		;TODO: alle Werte erst speichern und gemeinsam uebertragen
+		;TODO: am Ende uebertragen
+		;TODO: Fall mit Interruptsperre:
+		staa x_pos
+		stab y_pos
+		lsrb										;Page herausfinden
+		lsrb
+		lsrb
+		stab pageNow
+		
+		ldab y_pos
+		andb #%00000111				;Divisionsrest /8 fuer das Bit in der Page
+		incb
+		
+		ldaa #1
+loadBallLoop
+		decb
+		beq loadBallEnd
+		
+		lsla
+		bra loadBallLoop
+		
+loadBallEnd
+		staa dataByteLCD
+		
+		cli
+		ldaa x_pos
+		jsr LCDcolumn
+		ldaa pageNow
+		jsr LCDpage
+		ldaa dataByteLCD
+		jsr LCDdata
+		sei
 		
 		rts										;Ende
 
@@ -253,7 +253,7 @@ setBatLCD
 		
 		ldab #8									;Schleifendurchlaeufe, da 8 Zeilen
 setBatLCDLoop
-		;sei											;TODO: Interrupts unterbinden
+		sei											;TODO: Interrupts unterbinden
 		ldaa batX								;Spalte einstellen
 		jsr LCDcolumn						
 		
@@ -267,7 +267,7 @@ setBatLCDLoop
 		ldaa 0,x								;Daten veroeffentlichen
 		inx
 		jsr LCDdata
-		;cli											;TODO: Interrupts erlauben
+		cli											;TODO: Interrupts erlauben
 		
 		decb										;Gehoert die naechste Zeile noch zum Spielfeld?
 		bne setBatLCDLoop

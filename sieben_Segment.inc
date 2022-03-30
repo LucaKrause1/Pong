@@ -110,7 +110,7 @@ initSegmentTimer
 ;	Dieser Timer aktualisiert die 7-Segment-Anzeige
 ;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
-isrOC1			
+isrOC1		
 			ldy #PointsAasString
 			ldab segment
 			aby											;Segment-Index raufaddieren
@@ -127,7 +127,7 @@ isrOC1
 			
 															;Timer einstellen
 			ldd TOC1									;Frequenz einstellen
-			addd #2000								;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
+			addd #3000								;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
 															;-> nach 1000 us wieder interrupten
 			std TOC1
 			
