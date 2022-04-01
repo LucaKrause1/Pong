@@ -11,8 +11,6 @@ batX 					ds.b 	1				;X-Position eines Schlaegers
 Bat1 					ds.b 	8				;Alle Positionen des Schlaegers 1
 Bat2 					ds.b 	8				;Alle Positionen des Schlaegers 2
 LCDcurrentPage 	ds.b 	1
-position 				ds.b 	1
-leftBits 					ds.b 	1
 
 bitNum 					ds.b 	1
 startBit 					ds.b 	1
@@ -29,8 +27,6 @@ divRestLoadBall		ds.b	1
 		switch RomSection
 ;Konstanten
 pages 					dc.b 	8
-columns 				dc.b 	128
-pagesInBits 			dc.b 	64
 pageLength 			dc.b 	8
 batSize 					dc.b 	9
 bat1X					dc.b	20
@@ -82,13 +78,8 @@ deleteBallUpper
 		cmpb lastByteIndex
 		bne deleteBallLower
 		
-		ldaa x_pos
-		jsr LCDcolumn
 		ldaa pageNow
 		inca
-		jsr LCDpage
-		ldaa lsbSet
-		jsr LCDdata
 		
 deleteBallDelete
 		jsr LCDpage
@@ -317,7 +308,6 @@ setBatLCD
 		
 		ldab #8									;Schleifendurchlaeufe, da 8 Zeilen
 setBatLCDLoop
-		sei											;TODO: Interrupts unterbinden
 		ldaa batX								;Spalte einstellen
 		jsr LCDcolumn						
 		
@@ -331,7 +321,6 @@ setBatLCDLoop
 		ldaa 0,x								;Daten veroeffentlichen
 		inx
 		jsr LCDdata
-		cli											;TODO: Interrupts erlauben
 		
 		decb										;Gehoert die naechste Zeile noch zum Spielfeld?
 		bne setBatLCDLoop

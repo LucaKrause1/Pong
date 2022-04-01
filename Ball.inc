@@ -10,12 +10,6 @@ BallX							ds.b 	1				;Ballposition in X-Richtung
 BallY							ds.b	1				;Ballposition in Y-Richtung
 moveX						ds.b 	1				;Ballaenderung in X-Richtung
 moveY						ds.b	1				;Ballaenderung in Y-Richtung
-speed 						ds.w	1				;Geschwindigkeit des Balls, 
-														;je kleiner, desto schneller
-														;realisiert als Einheit 
-														;fuer den Timer des Balls
-timerSeconds				ds.b 1				;wird runtergezaehlt, 
-														;damit der Ball laenger sichtbar ist
 BallTimer 					ds.w 	1			;Anzahl an 7-Segment-Interrupts fuer die Ball-Bewegung
 
 BatStart					ds.b	1			;wo faengt ein Schlager an
@@ -26,17 +20,16 @@ BatEnd						ds.b	1			;Start des Endbereichs eines Schlaegers
 		switch RomSection
 ;Konstanten
 BatSteps				dc.b	3				;Schrittweite der Bereiche eines Schlaegers
-StartSpeed				dc.w	65000
-maxSpeed 				dc.w	20000
 startX 						dc.b	64
 startY 						dc.b	32
 startXMove				dc.b	1
 startYMove				dc.b	1
 firstY							dc.b	1
 lastY							dc.b	62
-timerSecondsReset		dc.b 	1				;Grundschnelligkeit in Zyklen des Balls,
-														; um die 2-Byte der Timer-Grenze zu umgehen.
-														;TODO: auf 2 setzen
+BallSpeed						dc.w	40			;Geschwindigkeit des Balls, 
+														;je kleiner, desto schneller
+														;realisiert als Einheit 
+														;fuer den Timer des Balls
 
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Ball fuer jedes Spiel
@@ -66,64 +59,13 @@ initBall
 			rts 										;Ende
 			
 ; -----------------------------------------------------------------------------
-;	Initialisiert den Interrupt-Timer fuer den Ball
-;	Nutzt D
+;	Laedt den Ball neu, falls eine bestimmte Zeit vergangen ist
+;	nutzt A,B
 ;	keine Parameter
 ; -----------------------------------------------------------------------------
-initBallTimer
-			psha
-			pshb
-			
-			ldd TOC2
-			addd StartSpeed					;Timer einstellen
-			std TOC2
-			
-			bset TMSK1, #%01000000  
-			
-			pulb
-			pula
-			rts										;Ende
-;TODO: alles Loeschen, was mit der isrOC2 zu tun hat!!!
-; -----------------------------------------------------------------------------
-;	Interrupt-Service-Routine
-;	Timer 2
-;	Dieser Timer aktualisiert den Ball nach 
-;	einer vorbestimmten Zeit auf dem Spielfeld.
-;	nutzt A,B
-;	keine Parameter, da es sich um eine Interrupt Service Routine handelt.
-; -----------------------------------------------------------------------------
-isrOC2			
-NotReloadingBall
-			ldd speed								;Geschwindigkeit des Balls erhoehen
-			cmpa maxSpeed
-			bmi NoSpeedCorrection
-			subd #10
-			std speed
-			
-NoSpeedCorrection
-														;Timer einstellen
-			ldd TOC2								;Frequenz einstellen
-			addd speed							;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
-														;-> nach 1000 us wieder interrupten
-			std TOC2
-			
-			;Flag zuruecksetzen
-			bset TFLG1,  #%10000000
-			
-			rti											;Ende Interrupt
-			
-			
-			
-			
-			
-			
-
-		;TODO: Doku	
-			
-			
 reloadBall
 			ldd BallTimer
-			cmpd #50
+			cmpd BallSpeed
 			blo LoadingBallEnd
 			ldd #0
 			std BallTimer
@@ -142,16 +84,17 @@ LoadingBall
 LoadingBallEnd
 			rts											;Ende
 			
-			
-		;TODO: Doku	
 ; -----------------------------------------------------------------------------
-;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
+;	Berechnet, den Abschlagwinkel vom uebergebenen Schlaeger
 ;	Parameter: 
 ;		A = Ballposition
 ;		B = Schlaegerposition
-;	nutzt 
+;	nutzt A,B
 ; -----------------------------------------------------------------------------
 hitBat
+			psha
+			pshb
+			
 			stab BatStart
 			addb BatSteps
 			stab BatMid
@@ -175,21 +118,24 @@ EndBat
 			ldaa #1
 			staa moveY
 			bra hitBatEnd
+			
 hitBatEnd
-;TODO: Faelle oben und unten am Rand -> Ball wuerde nach aussen laufen, da die Y-Ueberpruefung vorher durchgefuehrt wird
+
+			pulb
+			pula
 			rts											;Ende
 
 			
 ; -----------------------------------------------------------------------------
-;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
+;	Bewegt den Ball und sorgt fuer ein Abprallen
+;		an den Y-Grenzen und den Schlaegern
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 moveBall
 			psha
 			pshb
 
-;Erst ueberpruefen, dann bewegen!
-;ueberpruefen
+;Raender ueberpruefen
 XTest
 			ldaa bat1X
 			inca
@@ -203,7 +149,7 @@ NotLeft
 			cmpa BallX
 			beq Right								;Ist der Ball vor der Spalte des rechten Schlaegers?
 NotRight
-			bra EndMove
+			bra EndControl
 Left
 			ldaa BallY
 			cmpa BatPos1
@@ -217,7 +163,7 @@ Left
 			ldaa #1
 			staa moveX
 			
-			bra EndMove
+			bra EndControl
 Right
 			ldaa BallY
 			cmpa BatPos2
@@ -231,7 +177,7 @@ Right
 			ldaa #-1
 			staa moveX
 			
-			bra EndMove
+			bra EndControl
 			
 MovingPointsA
 			ldd PointsA
@@ -253,9 +199,9 @@ PlayerGotPoints
 			jsr deleteBall
 			jsr initBall
 			
-			bra EndOfMoving
+			bra EndMove
 			
-EndMove
+EndControl
 			;obere Display-Grenze
 			ldaa BallY
 			cmpa firstY
@@ -277,7 +223,8 @@ DidntHitUpperBorder
 
 DidntHitLowerBorder
 
-			;Bewegen
+;Bewegen
+StartMove
 			ldaa BallX
 			adda moveX
 			staa BallX
@@ -286,8 +233,7 @@ DidntHitLowerBorder
 			adda moveY
 			staa BallY
 			
-EndOfMoving
-			;TODO: hinzufuegen, dass der Ball an den Raendern des Schlaegers anders abprallt?
+EndMove
 			pulb
 			pula
 			rts											;Ende

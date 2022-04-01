@@ -18,7 +18,7 @@ page 	ds.b 	1							;In welcher Zeile sind wir?
 ;   Setzt das gesamte Display zurueck
 ;	nutzt D
 ; -----------------------------------------------------------------------------
-LoeschLCD
+DeleteLCD
 		psha
 		pshb
 		

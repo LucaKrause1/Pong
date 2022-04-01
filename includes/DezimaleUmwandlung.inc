@@ -37,7 +37,7 @@ Conversion16BitValue
 		staa counter16conversion
 		
 		ldd conversion16Bit
-													;TODO: fertig???
+
 DivConversion
 		dey										;y heruntersetzen
 		

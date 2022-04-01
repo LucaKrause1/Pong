@@ -13,8 +13,8 @@ BatPos2 		ds.b	1				;Position des zweiten Schlaegers
 BatPos1End 	ds.b	1
 BatPos2End 	ds.b	1
 
-i 					ds.b 	1
-j 					ds.b 	1
+mapCoordI 			ds.b 	1
+mapCoordJ 			ds.b 	1
 
 		switch RomSection
 ;Konstanten
@@ -31,13 +31,13 @@ maxY 			dc.b 	56
 mapCoord
 		lsra
 		lsra
-		staa i
+		staa mapCoordI
 		lsra
 		lsra
 		lsra
-		staa j
-		ldaa i
-		suba j
+		staa mapCoordJ
+		ldaa mapCoordI
+		suba mapCoordJ
 		
 		cmpa maxY
 		

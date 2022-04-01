@@ -2,7 +2,7 @@
 ;   Projekt. Microcontroller
 ;	Author: 			Luca Manuel Krause
 ;	Startdatum: 		18.01.2022
-;	Enddatum:			TODO
+;	Enddatum:			01.04.2022
 ;	Name des Projekts: 	Pong
 ;	Zusatz: realisiert auf einem Microcontroller, an dem ein LCD-Bildschirm, 
 ;			zwei 7-Segmentanzeigen aus jeweils 4 Zeichen bestehend, 
@@ -86,10 +86,7 @@ Reset
 			include Potis.inc
 			include init.inc
 			include Ball.inc
-			include Debug.inc				;TODO: alles fuer Debug entfernen, aber vor Ort, um nichts kaputt zu machen
-			include Ein_Ausgabe.inc
-					
-			include includes\LCDfont.inc		
+						
 			include includes\LCD_communication.inc
 			include includes\AD_Wandler.inc
 			include includes\DezimaleUmwandlung.inc
@@ -101,7 +98,7 @@ Reset
 ;   Vektortabelle
 ; -----------------------------------------------------------------------------
 
-Error		bra	*								; hier waere Fehlerbehandlung sinnvollF
+Error		bra	*								; hier waere Fehlerbehandlung sinnvoll
 
 ;*** Vektoren ***
 Vector		section
