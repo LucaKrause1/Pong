@@ -18,8 +18,14 @@ timerSeconds				ds.b 1				;wird runtergezaehlt,
 														;damit der Ball laenger sichtbar ist
 BallTimer 					ds.w 	1			;Anzahl an 7-Segment-Interrupts fuer die Ball-Bewegung
 
+BatStart					ds.b	1			;wo faengt ein Schlager an
+BatMid						ds.b	1			;Start des Mittelbereichs eines Schlaegers
+BatEnd						ds.b	1			;Start des Endbereichs eines Schlaegers
+
+
 		switch RomSection
 ;Konstanten
+BatSteps				dc.b	3				;Schrittweite der Bereiche eines Schlaegers
 StartSpeed				dc.w	65000
 maxSpeed 				dc.w	20000
 startX 						dc.b	64
@@ -77,7 +83,7 @@ initBallTimer
 			pulb
 			pula
 			rts										;Ende
-
+;TODO: alles Loeschen, was mit der isrOC2 zu tun hat!!!
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
 ;	Timer 2
@@ -112,12 +118,12 @@ NoSpeedCorrection
 			
 			
 
-			
+		;TODO: Doku	
 			
 			
 reloadBall
 			ldd BallTimer
-			cmpd #70
+			cmpd #40
 			blo LoadingBallEnd
 			ldd #0
 			std BallTimer
@@ -136,6 +142,44 @@ LoadingBall
 LoadingBallEnd
 			rts											;Ende
 			
+			
+		;TODO: Doku	
+; -----------------------------------------------------------------------------
+;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
+;	Parameter: 
+;		A = Ballposition
+;		B = Schlaegerposition
+;	nutzt 
+; -----------------------------------------------------------------------------
+hitBat
+			stab BatStart
+			addb BatSteps
+			stab BatMid
+			addb BatSteps
+			stab BatEnd
+
+			cmpa BatEnd
+			bge EndBat
+			cmpa BatMid
+			bge MidBat
+			
+StartBat
+			ldaa #-1
+			staa moveY
+			bra hitBatEnd
+MidBat
+			ldaa #0
+			staa moveY
+			bra hitBatEnd
+EndBat
+			ldaa #1
+			staa moveY
+			bra hitBatEnd
+hitBatEnd
+;TODO: Faelle oben und unten am Rand -> Ball wuerde nach aussen laufen, da die Y-Ueberpruefung vorher durchgefuehrt wird
+			rts											;Ende
+
+			
 ; -----------------------------------------------------------------------------
 ;	Bewegt den Ball und sorgt fuer ein Abprallen an den Y-Grenzen
 ;	nutzt A,B
@@ -146,27 +190,6 @@ moveBall
 
 ;Erst ueberpruefen, dann bewegen!
 ;ueberpruefen
-			;obere Display-Grenze
-			ldaa BallY
-			cmpa #0
-			
-			bne DidntHitUpperBorder
-			
-			ldaa #1
-			staa moveY
-			
-DidntHitUpperBorder	
-			;untere Display-Grenze
-			ldaa BallY
-			cmpa lastY
-			
-			bne DidntHitLowerBorder
-			
-			ldaa #-1
-			staa moveY
-
-DidntHitLowerBorder
-
 XTest
 			ldaa bat1X
 			inca
@@ -186,8 +209,12 @@ Left
 			cmpa BatPos1End
 			bhi MovingPointsB
 			
+			ldab BatPos1							;BallY schon in A vorhanden
+			jsr hitBat								;Abschlagwinkel errechnen
+			
 			ldaa #1
 			staa moveX
+			
 			bra EndMove
 Right
 			ldaa BallY
@@ -196,8 +223,12 @@ Right
 			cmpa BatPos2End
 			bhi MovingPointsA
 			
+			ldab BatPos2							;BallY schon in A vorhanden
+			jsr hitBat								;Abschlagwinkel errechnen
+			
 			ldaa #-1
 			staa moveX
+			
 			bra EndMove
 			
 MovingPointsA
@@ -223,6 +254,27 @@ PlayerGotPoints
 			bra EndOfMoving
 			
 EndMove
+			;obere Display-Grenze
+			ldaa BallY
+			cmpa #0
+			
+			bne DidntHitUpperBorder
+			
+			ldaa #1
+			staa moveY
+			
+DidntHitUpperBorder	
+			;untere Display-Grenze
+			ldaa BallY
+			cmpa lastY
+			
+			bne DidntHitLowerBorder
+			
+			ldaa #-1
+			staa moveY
+
+DidntHitLowerBorder
+
 			;Bewegen
 			ldaa BallX
 			adda moveX

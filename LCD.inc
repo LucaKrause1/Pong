@@ -31,8 +31,8 @@ columns 				dc.b 	128
 pagesInBits 			dc.b 	64
 pageLength 			dc.b 	8
 batSize 					dc.b 	9
-bat1X					dc.b	1
-bat2X					dc.b	126
+bat1X					dc.b	20
+bat2X					dc.b	112
 
 ; -----------------------------------------------------------------------------
 ;   Loescht den Ball auf dem Display
