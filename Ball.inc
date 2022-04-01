@@ -32,8 +32,8 @@ startX 						dc.b	64
 startY 						dc.b	32
 startXMove				dc.b	1
 startYMove				dc.b	1
-lastX							dc.b	127
-lastY							dc.b	63
+firstY							dc.b	1
+lastY							dc.b	62
 timerSecondsReset		dc.b 	1				;Grundschnelligkeit in Zyklen des Balls,
 														; um die 2-Byte der Timer-Grenze zu umgehen.
 														;TODO: auf 2 setzen
@@ -123,7 +123,7 @@ NoSpeedCorrection
 			
 reloadBall
 			ldd BallTimer
-			cmpd #40
+			cmpd #50
 			blo LoadingBallEnd
 			ldd #0
 			std BallTimer
@@ -193,10 +193,12 @@ moveBall
 XTest
 			ldaa bat1X
 			inca
+			inca
 			cmpa BallX
 			beq Left								;Ist der Ball vor der Spalte des linken Schlaegers?
 NotLeft		
 			ldaa bat2X
+			deca
 			deca
 			cmpa BallX
 			beq Right								;Ist der Ball vor der Spalte des rechten Schlaegers?
@@ -256,7 +258,7 @@ PlayerGotPoints
 EndMove
 			;obere Display-Grenze
 			ldaa BallY
-			cmpa #0
+			cmpa firstY
 			
 			bne DidntHitUpperBorder
 			

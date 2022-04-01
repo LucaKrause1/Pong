@@ -22,6 +22,8 @@ x_pos 					ds.b 	1
 y_pos 					ds.b 	1
 pageNow				ds.b	1
 dataByteLCD			ds.b	1
+dataByteVerticalLCD	ds.b	1
+divRestLoadBall		ds.b	1
 
 
 		switch RomSection
@@ -33,6 +35,10 @@ pageLength 			dc.b 	8
 batSize 					dc.b 	9
 bat1X					dc.b	20
 bat2X					dc.b	112
+firstByteIndex			dc.b	0
+lastByteIndex			dc.b	7
+lsbSet					dc.b	1
+msbSet					dc.b	128
 
 ; -----------------------------------------------------------------------------
 ;   Loescht den Ball auf dem Display
@@ -42,8 +48,9 @@ bat2X					dc.b	112
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 deleteBall
-		;TODO: Interruptsperre einbauen, um immer in der richtigen Position zu sein
+		staa x_pos
 		stab y_pos							;Zwischenspeichern, da B ueberschrieben wird
+		deca
 		jsr LCDcolumn						;Spalte uebertragen
 		
 		ldaa y_pos								
@@ -54,6 +61,50 @@ deleteBall
 		
 		ldaa #0									;Daten uebertragen: Null fuers Loeschen des Balls
 		jsr LCDdata
+		ldaa #0									;Daten uebertragen: Null fuers Loeschen des Balls
+		jsr LCDdata
+		ldaa #0									;Daten uebertragen: Null fuers Loeschen des Balls
+		jsr LCDdata
+		
+		;Randfaelle loeschen
+		ldab divRestLoadBall
+		
+		cmpb firstByteIndex
+		bne deleteBallUpper
+		
+		ldaa pageNow
+		deca
+		
+		bra deleteBallDelete
+
+deleteBallUpper
+
+		cmpb lastByteIndex
+		bne deleteBallLower
+		
+		ldaa x_pos
+		jsr LCDcolumn
+		ldaa pageNow
+		inca
+		jsr LCDpage
+		ldaa lsbSet
+		jsr LCDdata
+		
+deleteBallDelete
+		jsr LCDpage
+		ldaa x_pos
+		jsr LCDcolumn
+		ldaa #0
+		jsr LCDdata
+
+deleteBallLower
+				
+		ldab divRestLoadBall
+		incb
+		
+		ldaa #1
+		staa dataByteLCD
+		ldaa #3
 		
 		rts										;Ende
 		
@@ -65,37 +116,6 @@ deleteBall
 ;	nutzt A,B
 ; -----------------------------------------------------------------------------
 loadBall
-		;stab y_pos
-		;;sei
-		;jsr LCDcolumn
-		
-		;ldaa y_pos
-		;lsra										;Page herausfinden
-		;lsra
-		;lsra
-		;jsr LCDpage
-		
-		;ldab y_pos
-		;andb #%00000111				;Divisionsrest /8 fuer das Bit in der Page
-		;incb
-		
-		;ldaa #1
-;loadBallLoop
-		;decb
-		;beq loadBallEnd
-		
-		;lsla
-		;bra loadBallLoop
-		
-;loadBallEnd
-		;;Daten in A
-		;jsr LCDdata
-		;cli
-		
-		;TODO: Interruptsperre einbauen, um immer in der richtigen Position zu sein
-		;TODO: alle Werte erst speichern und gemeinsam uebertragen
-		;TODO: am Ende uebertragen
-		;TODO: Fall mit Interruptsperre:
 		staa x_pos
 		stab y_pos
 		lsrb										;Page herausfinden
@@ -105,27 +125,71 @@ loadBall
 		
 		ldab y_pos
 		andb #%00000111				;Divisionsrest /8 fuer das Bit in der Page
+		stab divRestLoadBall
+		
+		cmpb firstByteIndex
+		bne UpperByteBorder
+		
+		ldaa x_pos
+		jsr LCDcolumn
+		ldaa pageNow
+		deca
+		jsr LCDpage
+		ldaa msbSet
+		jsr LCDdata
+
+UpperByteBorder
+
+		cmpb lastByteIndex
+		bne LowerByteBorder
+		
+		ldaa x_pos
+		jsr LCDcolumn
+		ldaa pageNow
+		inca
+		jsr LCDpage
+		ldaa lsbSet
+		jsr LCDdata
+
+LowerByteBorder
+				
+		ldab divRestLoadBall
 		incb
 		
 		ldaa #1
+		staa dataByteLCD
+		ldaa #3
 loadBallLoop
 		decb
 		beq loadBallEnd
 		
+		lsl dataByteLCD
+		
+		cmpa #7
+		bhs loadBallNoAdd
+		
+		lsla
+		inca
+		bra loadBallLoop
+
+loadBallNoAdd
 		lsla
 		bra loadBallLoop
 		
 loadBallEnd
-		staa dataByteLCD
+		staa dataByteVerticalLCD
 		
-		;cli
 		ldaa x_pos
+		deca
 		jsr LCDcolumn
 		ldaa pageNow
 		jsr LCDpage
 		ldaa dataByteLCD
 		jsr LCDdata
-		;sei
+		ldaa dataByteVerticalLCD	;A wurde ueberschrieben
+		jsr LCDdata
+		ldaa dataByteLCD			;A wurde ueberschrieben
+		jsr LCDdata
 		
 		rts										;Ende
 
