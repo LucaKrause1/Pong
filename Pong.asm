@@ -7,6 +7,14 @@
 ;	Zusatz: realisiert auf einem Microcontroller, an dem ein LCD-Bildschirm, 
 ;			zwei 7-Segmentanzeigen aus jeweils 4 Zeichen bestehend, 
 ;			Potentiometern und einige Knoepfe angeschlossen sind.
+;
+;	Nachricht an den Leser: 
+;	Die Fromatierung hat leider nicht hingehauen, egal, was ich tue. 
+;	Auf verschiedenen PC's bedeutet die Formatierung etwas anderes. 
+;	Habe ich also auf einem PC alles gerade eingestellt, ist dies 
+;	auf einem anderen PC total schief. Ich bin immer dankbar 
+;	für Loesungsvorschlaege (:.
+;
 ; -----------------------------------------------------------------------------
 
 ; -----------------------------------------------------------------------------
