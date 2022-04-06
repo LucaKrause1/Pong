@@ -6,30 +6,30 @@
 ; -----------------------------------------------------------------------------     
 		switch VarSection
 ;Variablen
-BallX							ds.b 	1				;Ballposition in X-Richtung
-BallY							ds.b	1				;Ballposition in Y-Richtung
-moveX						ds.b 	1				;Ballaenderung in X-Richtung
-moveY						ds.b	1				;Ballaenderung in Y-Richtung
-BallTimer 					ds.w 	1			;Anzahl an 7-Segment-Interrupts fuer die Ball-Bewegung
+BallX			ds.b 	1			;Ballposition in X-Richtung
+BallY			ds.b	1			;Ballposition in Y-Richtung
+moveX			ds.b 	1			;Ballaenderung in X-Richtung
+moveY			ds.b	1			;Ballaenderung in Y-Richtung
+BallTimer 		ds.w 	1			;Anzahl an 7-Segment-Interrupts fuer die Ball-Bewegung
 
-BatStart					ds.b	1			;wo faengt ein Schlager an
-BatMid						ds.b	1			;Start des Mittelbereichs eines Schlaegers
-BatEnd						ds.b	1			;Start des Endbereichs eines Schlaegers
+BatStart		ds.b	1			;wo faengt ein Schlager an
+BatMid			ds.b	1			;Start des Mittelbereichs eines Schlaegers
+BatEnd			ds.b	1			;Start des Endbereichs eines Schlaegers
 
 
 		switch RomSection
 ;Konstanten
-BatSteps				dc.b	3				;Schrittweite der Bereiche eines Schlaegers
-startX 						dc.b	64
-startY 						dc.b	32
-startXMove				dc.b	1
-startYMove				dc.b	1
-firstY							dc.b	1
-lastY							dc.b	62
-BallSpeed						dc.w	40			;Geschwindigkeit des Balls, 
-														;je kleiner, desto schneller
-														;realisiert als Einheit 
-														;fuer den Timer des Balls
+BatSteps		dc.b	3			;Schrittweite der Bereiche eines Schlaegers
+startX 			dc.b	64
+startY 			dc.b	32
+startXMove		dc.b	1
+startYMove		dc.b	1
+firstY			dc.b	1
+lastY			dc.b	62
+BallSpeed		dc.w	40			;Geschwindigkeit des Balls, 
+									;je kleiner, desto schneller
+									;realisiert als Einheit 
+									;fuer den Timer des Balls
 
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Ball fuer jedes Spiel
