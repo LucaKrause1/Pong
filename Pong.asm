@@ -21,7 +21,7 @@
 
 VarSection	Section
 			org $0040
-dummy ds.b 1								;Dummy-Variable fuer das 
+dummy 		ds.b 	1								;Dummy-Variable fuer das 
 													;Initialisieren aller Variablen-Inhalte
 
 ; -----------------------------------------------------------------------------

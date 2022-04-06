@@ -8,21 +8,21 @@
 
 		switch VarSection
 ;Variablen
-PointsA 			ds.w	1							;Punkte des ersten Spielers
-PointsB 			ds.w 	1							;Punkte des zweiten Spielers
-PointsAasString 	ds.b 	4							;Punkte des ersten Spielers
-PointsBasString 	ds.b 	4							;Punkte des zweiten Spielers
-PointsAForSegment 	ds.b	4							;Punkte fuer das Segment des ersten Spielers
-														;muss sich hinter PointsAasString befinden
-PointsBForSegment 	ds.b	4							;Punkte fuer das Segment des zweiten Spielers
+PointsA 			ds.w	1				;Punkte des ersten Spielers
+PointsB 			ds.w 	1				;Punkte des zweiten Spielers
+PointsAasString 	ds.b 	4				;Punkte des ersten Spielers
+PointsBasString 	ds.b 	4				;Punkte des zweiten Spielers
+PointsAForSegment 	ds.b	4				;Punkte fuer das Segment des ersten Spielers
+											;muss sich hinter PointsAasString befinden
+PointsBForSegment 	ds.b	4				;Punkte fuer das Segment des zweiten Spielers
 
-segment 			ds.b 	1							;welches Segment als naechstes gezeigt wird
+segment 			ds.b 	1				;welches Segment als naechstes gezeigt wird
 
 
 		switch RomSection
 ;Konstanten
 											;Hexadezimale Darstellung der Zahlen
-Numbers			dc.b				$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
+Numbers				dc.b	$3F,$06,$5B,$4F,$66,$6D,$7D,$07,$7F,$6F
 											;Bit-Darstellung der Zahlen
 											;$#00111111,$#00000110,$#01011011,
 											;$#01001111,$#01100110,$#01101101,
@@ -49,7 +49,7 @@ pointsToString
 			puly
 			pulb
 			pula
-			rts											;Ende
+			rts								;Ende
 			
 ; -----------------------------------------------------------------------------
 ;	wandelt die Punkte der Spieler aus Dezimal in 7-Segment-Zahlen um
@@ -69,8 +69,8 @@ pointsToSegmentsLoop
 			ldy #Numbers
 			aby
 			ldab 0,y
-			stab 8,x									;8, weil die PointsAForSegments 8 
-														;Byte hinter PointsAasString sind
+			stab 8,x						;8, weil die PointsAForSegments 8 
+											;Byte hinter PointsAasString sind
 			
 			inx
 			deca
@@ -80,7 +80,7 @@ pointsToSegmentsLoop
 			pulx
 			pulb
 			pula
-			rts											;Ende
+			rts								;Ende
 			
 
 ; -----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ initSegments
 			staa PORTA
 			
 			pula
-			rts											;Ende
+			rts								;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Initialisiert den Timer fuer die 7-Segment-Anzeige
@@ -108,7 +108,7 @@ initSegmentTimer
 			staa TMSK1
 			       
 			pula          
-			rts											;Ende
+			rts								;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Interrupt-Service-Routine
@@ -117,29 +117,29 @@ initSegmentTimer
 ;	nutzt A,B,Y
 ; -----------------------------------------------------------------------------
 isrOC1		
-			ldab segment								;Segment weiterstellen
+			ldab segment					;Segment weiterstellen
 			incb
 			andb #%00000111					;nur die letzen 3 Bit sind interessant
 			stab segment
 			
 			ldy #PointsAForSegment
-			aby											;Segment-Index raufaddieren
+			aby								;Segment-Index raufaddieren
 			
 			ldaa 0,y
 			
-			stab PIO_C								;0 = links, 7 = rechts
+			stab PIO_C						;0 = links, 7 = rechts
 			staa PIO_A
 			
 			ldd BallTimer					;Timer fuer den Ball weitersetzen
 			addd #1
 			std BallTimer
-															;Timer einstellen
-			ldd TOC1									;Frequenz einstellen
-			addd #2000								;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
-															;-> nach 1000 us wieder interrupten
+											;Timer einstellen
+			ldd TOC1						;Frequenz einstellen
+			addd #2000						;diesen Wert eingeben -> (2000) / 2.000.000 = 1000 Hz
+											;-> nach 1000 us wieder interrupten
 			std TOC1
 			
 			;Flag zuruecksetzen
 			bset TFLG1,  #%10000000	
 			
-			rti												;Ende Interrupt
+			rti								;Ende Interrupt

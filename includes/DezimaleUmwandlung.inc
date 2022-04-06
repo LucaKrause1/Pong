@@ -7,13 +7,14 @@
 
 		switch VarSection
 ;Variablen
-conversion16Bit		 			ds.b 	2			;Zwischengespeicherter Wert der Umwandlung
-counter16conversion			ds.b 	1			;Zaehler, wie oft der Rest geholt werden soll
-fourSegmentConversion		ds.w 1			;max. 4 Stellen ausgeben
+conversion16Bit		 		ds.b 	2	;Zwischengespeicherter Wert der Umwandlung
+counter16conversion			ds.b 	1	;Zaehler, wie oft der Rest geholt werden soll
+fourSegmentConversion		ds.w 	1	;max. 4 Stellen ausgeben
 
 		switch RomSection
 ;Konstanten
-countConversion	 			dc.b 	4
+countConversion	 			dc.b 	4	;Anzahl der Stellen, 
+										;die die Umgewandelte Zahl haben soll
 
 ; -----------------------------------------------------------------------------
 ;  Wandelt den uebergebenen Wert in Dezimalschreibweise als String
@@ -30,24 +31,24 @@ Conversion16BitValue
 		std conversion16Bit
 		sty fourSegmentConversion
 		
-		ldab countConversion				;Am Ende des Strings anfangen
+		ldab countConversion			;Am Ende des Strings anfangen
 		aby										
 		
-		ldaa countConversion				;anzahlAusgabe Zeichen ausgeben
+		ldaa countConversion			;anzahlAusgabe Zeichen ausgeben
 		staa counter16conversion
 		
 		ldd conversion16Bit
 
 DivConversion
-		dey										;y heruntersetzen
+		dey								;y heruntersetzen
 		
 		ldx #10
-		idiv										;Division durchfuehren
+		idiv							;Division durchfuehren
 		
 		stab 0,y
 		
-		dec counter16conversion		;Counter dekrementieren
-		xgdx										;Div-Ergebnis holen
+		dec counter16conversion			;Counter dekrementieren
+		xgdx							;Div-Ergebnis holen
 		bne DivConversion
 		
 EndStringConversion
@@ -56,5 +57,5 @@ EndStringConversion
 		puly
 		pulx
 		
-		rts										;Ende
+		rts								;Ende
 	

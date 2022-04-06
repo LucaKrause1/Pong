@@ -8,8 +8,8 @@
 
 		switch VarSection
 ;Variablen
-row 		ds.b 	1							;Fuer das Loschen des LCD-Displays
-page 	ds.b 	1							;In welcher Zeile sind wir?
+row 		ds.b 	1			;Fuer das Loschen des LCD-Displays
+page 		ds.b 	1			;In welcher Zeile sind wir?
 
 		switch RomSection
 ;Konstanten
@@ -27,14 +27,14 @@ DeleteLCD
 RepeatRows
 		staa row
 
-		ldaa #0								;wird an das Display uebertragen
-		ldab #128							;Initialisiere den Spaltenzaehler mit 128 
-												;->entspricht der maximalen Spaltenzahl des Displays
+		ldaa #0					;wird an das Display uebertragen
+		ldab #128				;Initialisiere den Spaltenzaehler mit 128 
+								;->entspricht der maximalen Spaltenzahl des Displays
 RepeatForRow
-		ldaa #0								;wird an das Display uebertragen
-		jsr LCDdata						;leeres Byte setzen				
-		decb									;setze die noch zu leerenden Spalten runter
-		bne RepeatForRow				;wiederhole, solange B nicht Null ist
+		ldaa #0					;wird an das Display uebertragen
+		jsr LCDdata				;leeres Byte setzen				
+		decb					;setze die noch zu leerenden Spalten runter
+		bne RepeatForRow		;wiederhole, solange B nicht Null ist
 												
 EndeRow
 		jsr nextRow
@@ -44,7 +44,7 @@ EndeRow
 		
 		pulb
 		pula
-		rts									;Ende
+		rts						;Ende
 		
 ; -----------------------------------------------------------------------------
 ;  Springt im Display in die naechste Page (an dern Anfang der Zeile)
@@ -53,18 +53,18 @@ EndeRow
 nextRow
 		psha
 		
-		ldaa #0								;Spalte auf 0 setzen
+		ldaa #0					;Spalte auf 0 setzen
 		jsr LCDcolumn
 
-		ldaa page							;Zeile einen weiter setzen, oder auf 0 springen,
-		inca									;	falls am Ende angekommen
+		ldaa page				;Zeile einen weiter setzen, oder auf 0 springen,
+		inca					;	falls am Ende angekommen
 		anda #%00000111
 		
 		staa page
-		jsr LCDpage						;page uebertragen
+		jsr LCDpage				;page uebertragen
 		
 		pula
-		rts									;Ende
+		rts						;Ende
 		
 ; -----------------------------------------------------------------------------
 ;	Setzt den Page-Cursor des LCD-Displays auf den uebergebenen Wert
@@ -74,7 +74,7 @@ nextRow
 LCDpage
 		adda #%10110000			;Kommando hinzufuegen
 		jsr LCDcommand
-		rts									;Ende
+		rts						;Ende
 	
 ; -----------------------------------------------------------------------------
 ;	Setzt den Spalten-Cursor des LCD-Displays auf den uebergebenen Wert
@@ -95,7 +95,7 @@ LCDcolumn
 		adda #%00000000			;Kommando hinzufuegen
 		jsr LCDcommand
 		
-		rts									;Ende
+		rts						;Ende
 
 ; -----------------------------------------------------------------------------
 ;   Initialisierung des Displays
@@ -120,8 +120,8 @@ initLCD
 		 ldaa #$AF              
 		 bsr  LCDcommand              
 		 bclr PORTA,%01000000 	; PA6 = DIMM              
-		 pula   								; Hintergrundbeleuchtung an              
-		 rts									;Ende
+		 pula   				; Hintergrundbeleuchtung an              
+		 rts					;Ende
 
 ; -----------------------------------------------------------------------------
 *       SPI-Unterprogramme
@@ -131,23 +131,23 @@ initSPI
 		ldaa #%00000011          
 		staa PORTD          
 		ldaa #%00111010          
-		staa DDRD          				; TXD,MOSI,SCK,-SS = out          
-		ldaa #%01010010     		; 125kHz,Mode=0          
-		staa SPCR     					; enable,no int          
+		staa DDRD          		; TXD,MOSI,SCK,-SS = out          
+		ldaa #%01010010     	; 125kHz,Mode=0          
+		staa SPCR     			; enable,no int          
 		pula          
-		rts									;Ende
+		rts						;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Uebertraegt Bytes an das LCD-Display
 ;	nutzt A
 ; -----------------------------------------------------------------------------
 SPItransfer   
-		staa  SPDR         				; Byte senden 
+		staa  SPDR         		; Byte senden 
 SPIwait2      
-		tst   SPSR        					; Warten mal anders              
-		bpl   SPIwait2 					; auf MSB = SPIF = 1              
-		ldaa  SPDR         				; Antwortbyte holen              
-		rts									;Ende
+		tst   SPSR        		; Warten mal anders              
+		bpl   SPIwait2 			; auf MSB = SPIF = 1              
+		ldaa  SPDR         		; Antwortbyte holen              
+		rts						;Ende
 
 ; -----------------------------------------------------------------------------
 ;	Sendet ein Kommandobyte aus A an das Display
@@ -179,10 +179,10 @@ LCDsend
 		andb  #%00111111   		; SPI_SEL = 0 = LCD          
 		stab  PIO_C              
 		jsr   SPItransfer              
-		orab  #%11000000  			; SPI_SEL = 3 = EEPROM              
+		orab  #%11000000  		; SPI_SEL = 3 = EEPROM              
 		stab  PIO_C
 		cli
 		      
 		pulb              
-		rts									;Ende
+		rts						;Ende
 

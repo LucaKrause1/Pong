@@ -10,7 +10,7 @@
 
 		switch RomSection
 ;Konstanten
-kanal 	dc.b 	4 							;4 = Poti links, 5 = Poti rechts
+kanal 	dc.b 	4 					;4 = Poti links, 5 = Poti rechts
 
 ; -----------------------------------------------------------------------------
 ;   Schaltet den A/D-Wandler ein
@@ -18,7 +18,7 @@ kanal 	dc.b 	4 							;4 = Poti links, 5 = Poti rechts
 ; -----------------------------------------------------------------------------
 initADC
 		bset OPTION, #%10000000
-		rts									;Ende
+		rts							;Ende
 		
 ; -----------------------------------------------------------------------------
 ;   Startet den AD_Wandler und wartet die Umwandlung ab
@@ -29,18 +29,18 @@ initADC
 ;		B = Schlaeger 2
 ; -----------------------------------------------------------------------------
 startADC
-		ldaa kanal							;ausgewaehlten Kanal laden
-		oraa #16							;das Mult Bit setzen
+		ldaa kanal					;ausgewaehlten Kanal laden
+		oraa #16					;das Mult Bit setzen
 		
-		staa ADCTL						;Wert an AD-Wandler uebergeben
+		staa ADCTL					;Wert an AD-Wandler uebergeben
 		
 Warte
 		ldaa ADCTL
-		bpl Warte							;Endlosschleife, bis MSB gesetzt
+		bpl Warte					;Endlosschleife, bis MSB gesetzt
 		
 		ldx #ADR1
-		ldaa 0,x							;1. Register laden
-		ldab 1,x							;2. Register laden
+		ldaa 0,x					;1. Register laden
+		ldab 1,x					;2. Register laden
 		
-												;Ergebnisse in A und B
-		rts									;Ende
+									;Ergebnisse in A und B
+		rts							;Ende

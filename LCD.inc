@@ -7,17 +7,17 @@
 
 		switch VarSection
 ;Variablen
-batX 					ds.b 	1				;X-Position eines Schlaegers
-Bat1 					ds.b 	8				;Alle Positionen des Schlaegers 1
-Bat2 					ds.b 	8				;Alle Positionen des Schlaegers 2
-LCDcurrentPage 	ds.b 	1
+batX 				ds.b 	1				;X-Position eines Schlaegers
+Bat1 				ds.b 	8				;Alle Positionen des Schlaegers 1
+Bat2 				ds.b 	8				;Alle Positionen des Schlaegers 2
+LCDcurrentPage 		ds.b 	1
 
-bitNum 					ds.b 	1
-startBit 					ds.b 	1
-endBit 					ds.b 	1				;Bit nach dem letzten zulässigen Bit
+bitNum 				ds.b 	1
+startBit 			ds.b 	1
+endBit 				ds.b 	1				;Bit nach dem letzten zulässigen Bit
 
-x_pos 					ds.b 	1
-y_pos 					ds.b 	1
+x_pos 				ds.b 	1
+y_pos 				ds.b 	1
 pageNow				ds.b	1
 dataByteLCD			ds.b	1
 dataByteVerticalLCD	ds.b	1
@@ -26,15 +26,15 @@ divRestLoadBall		ds.b	1
 
 		switch RomSection
 ;Konstanten
-pages 					dc.b 	8
+pages 				dc.b 	8
 pageLength 			dc.b 	8
-batSize 					dc.b 	9
-bat1X					dc.b	20
-bat2X					dc.b	112
-firstByteIndex			dc.b	0
-lastByteIndex			dc.b	7
-lsbSet					dc.b	1
-msbSet					dc.b	128
+batSize 			dc.b 	9
+bat1X				dc.b	20
+bat2X				dc.b	112
+firstByteIndex		dc.b	0
+lastByteIndex		dc.b	7
+lsbSet				dc.b	1
+msbSet				dc.b	128
 
 ; -----------------------------------------------------------------------------
 ;   Loescht den Ball auf dem Display
@@ -55,11 +55,11 @@ deleteBall
 		lsra
 		jsr LCDpage							;Zeile uebertragen
 		
-		ldaa #0									;Daten uebertragen: Null fuers Loeschen des Balls
+		ldaa #0								;Daten uebertragen: Null fuers Loeschen des Balls
 		jsr LCDdata
-		ldaa #0									;Daten uebertragen: Null fuers Loeschen des Balls
+		ldaa #0								;Daten uebertragen: Null fuers Loeschen des Balls
 		jsr LCDdata
-		ldaa #0									;Daten uebertragen: Null fuers Loeschen des Balls
+		ldaa #0								;Daten uebertragen: Null fuers Loeschen des Balls
 		jsr LCDdata
 		
 		;Randfaelle loeschen
@@ -109,13 +109,13 @@ deleteBallLower
 loadBall
 		staa x_pos
 		stab y_pos
-		lsrb										;Page herausfinden
+		lsrb									;Page herausfinden
 		lsrb
 		lsrb
 		stab pageNow
 		
 		ldab y_pos
-		andb #%00000111				;Divisionsrest /8 fuer das Bit in der Page
+		andb #%00000111							;Divisionsrest /8 fuer das Bit in der Page
 		stab divRestLoadBall
 		
 		cmpb firstByteIndex
@@ -177,9 +177,9 @@ loadBallEnd
 		jsr LCDpage
 		ldaa dataByteLCD
 		jsr LCDdata
-		ldaa dataByteVerticalLCD	;A wurde ueberschrieben
+		ldaa dataByteVerticalLCD				;A wurde ueberschrieben
 		jsr LCDdata
-		ldaa dataByteLCD			;A wurde ueberschrieben
+		ldaa dataByteLCD						;A wurde ueberschrieben
 		jsr LCDdata
 		
 		rts										;Ende
@@ -217,25 +217,25 @@ BytesSetBatLoop
 BitsSetBatLoop
 		decb
 		bmi EndSetBatLoops
-		pshb										;Zaehler sichern
+		pshb									;Zaehler sichern
 		lsra
 		inc bitNum
 		
 		ldab bitNum
 		
 		cmpb startBit
-		blo EndSetBatLoop 				;Branch, wenn die bitnum < startbit
-		ldab bitNum							;nicht sicher, ob das Ergebnis in B landet, da es wie eine Subtraktion implementiert ist.
+		blo EndSetBatLoop 						;Branch, wenn bitnum < startbit
+		ldab bitNum								;nicht sicher, ob das Ergebnis in B landet, da es wie eine Subtraktion implementiert ist.
 		cmpb endBit
-		bhi EndSetBatLoop					;Branch, wenn bitnum >= endbit
+		bhi EndSetBatLoop						;Branch, wenn bitnum >= endbit
 		
-		adda #128							;Bit ist Teil des Schlaegers
+		adda #128								;Bit ist Teil des Schlaegers
 
 EndSetBatLoop
-		pulb										;Zaehler zurueckholen
+		pulb									;Zaehler zurueckholen
 		bra BitsSetBatLoop
 		
-EndSetBatLoops								;Page fertig
+EndSetBatLoops									;Page fertig
 		staa 0,x
 		inx
 
@@ -261,7 +261,7 @@ setBats
 		psha
 		pshb
 		pshx
-		ldx #Bat1							;Ersten Schlaeger setzen
+		ldx #Bat1								;Ersten Schlaeger setzen
 		ldab BatPos1
 		jsr setBat
 		ldx #Bat1
@@ -273,7 +273,7 @@ setBats
 		deca
 		staa BatPos1End
 		
-		ldx #Bat2							;Zweiten Schlaeger setzen
+		ldx #Bat2								;Zweiten Schlaeger setzen
 		ldab BatPos2
 		jsr setBat
 		ldaa bat2X
@@ -311,7 +311,7 @@ setBatLCDLoop
 		ldaa batX								;Spalte einstellen
 		jsr LCDcolumn						
 		
-		ldaa LCDcurrentPage				;Zeile einstellen
+		ldaa LCDcurrentPage						;Zeile einstellen
 		jsr LCDpage
 		
 		ldaa LCDcurrentPage
@@ -322,7 +322,7 @@ setBatLCDLoop
 		inx
 		jsr LCDdata
 		
-		decb										;Gehoert die naechste Zeile noch zum Spielfeld?
+		decb									;Gehoert die naechste Zeile noch zum Spielfeld?
 		bne setBatLCDLoop
 		
 		pulx

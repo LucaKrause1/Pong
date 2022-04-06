@@ -10,11 +10,11 @@
 
 BatPos1 		ds.b	1				;Position des ersten Schlaegers
 BatPos2 		ds.b	1				;Position des zweiten Schlaegers
-BatPos1End 	ds.b	1
-BatPos2End 	ds.b	1
+BatPos1End 		ds.b	1
+BatPos2End 		ds.b	1
 
-mapCoordI 			ds.b 	1
-mapCoordJ 			ds.b 	1
+mapCoordI 		ds.b 	1
+mapCoordJ		ds.b 	1
 
 		switch RomSection
 ;Konstanten
